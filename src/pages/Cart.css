@@ -1,0 +1,199 @@
+.cart { padding: 48px 0 40px; }
+
+.cart-empty {
+  padding: 120px 0;
+  display: flex;
+  justify-content: center;
+}
+.cart-empty-inner {
+  text-align: center;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink-soft);
+}
+.cart-empty-inner h1 {
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
+.cart-empty-sub { color: var(--ink-mute); margin: 0 0 16px; }
+
+.cart-head {
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 32px;
+}
+.cart-title {
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 500;
+  margin: 10px 0 0;
+}
+
+.cart-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.cart-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cart-line {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+.cart-line-visual {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: var(--ink);
+}
+.cart-line-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cart-line-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cart-line-cat {
+  color: var(--ink-mute);
+  font-size: 10px;
+  margin: 0 0 4px;
+}
+.cart-line-name {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+  display: block;
+}
+.cart-line-name:hover { color: var(--accent); }
+.cart-line-tag {
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+.cart-line-remove {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ink-mute);
+  padding: 6px;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.cart-line-remove:hover { color: var(--accent); border-color: var(--accent); }
+
+.cart-line-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.cart-line-price {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cart-summary {
+  position: sticky;
+  top: 100px;
+  padding: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.cart-totals {
+  margin: 20px 0 24px;
+  padding: 20px 0;
+  border-top: 1px dashed var(--line);
+  border-bottom: 1px dashed var(--line);
+}
+.cart-totals > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+.cart-totals dt { color: var(--ink-soft); }
+.cart-totals dd { margin: 0; font-weight: 500; }
+.cart-shipping-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 4px 0 0;
+}
+.cart-total-row {
+  padding-top: 16px !important;
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.cart-total-row dt {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.cart-total {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cart-checkout {
+  width: 100%;
+  justify-content: center;
+  padding: 16px;
+}
+.cart-continue {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.cart-continue:hover { color: var(--accent); }
+
+.cart-trust {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--line);
+  color: var(--ink-mute);
+  text-align: center;
+  font-size: 10px;
+}
+
+@media (max-width: 860px) {
+  .cart-grid { grid-template-columns: 1fr; }
+  .cart-summary { position: static; }
+  .cart-line { grid-template-columns: 100px 1fr; }
+}
