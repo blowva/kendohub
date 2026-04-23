@@ -3,10 +3,11 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-elevated);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius);
+  border: 1px solid transparent;
+  border-radius: 16px;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s;
   opacity: 0;
   animation: pcard-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
@@ -15,29 +16,17 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .pcard:hover {
-  transform: translateY(-4px);
-  border-color: var(--ink);
-  box-shadow: var(--shadow);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.14);
 }
 
 .pcard-media {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 3;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line-soft);
+  aspect-ratio: 1 / 1;
+  background: var(--bg-sunk);
   color: var(--ink);
   overflow: hidden;
-}
-.pcard-media::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: 0.4;
-  pointer-events: none;
 }
 
 .pvisual { width: 100%; height: 100%; }
@@ -49,14 +38,6 @@
   left: 12px;
   display: flex;
   gap: 6px;
-  z-index: 2;
-}
-.pcard-index {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  color: var(--ink-mute);
-  font-size: 9.5px;
   z-index: 2;
 }
 
@@ -84,19 +65,24 @@
 }
 
 .pcard-name {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   margin: 0;
   font-variation-settings: 'opsz' 72, 'SOFT' 30;
+  line-height: 1.1;
 }
 .pcard-name-link { display: block; color: inherit; }
-.pcard-name-link:hover .pcard-name { color: var(--accent); }
+.pcard-name-link:hover .pcard-name { color: #00E0FF; }
 
 .pcard-tag {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 13.5px;
+  font-size: 13px;
   line-height: 1.45;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .pcard-foot {
@@ -105,7 +91,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px dashed var(--line);
+  border-top: 1px solid var(--line-soft);
 }
 .pcard-prices {
   display: flex;
@@ -114,9 +100,9 @@
 }
 .pcard-price {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 .pcard-old {
   font-family: var(--font-mono);
@@ -129,20 +115,35 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 9px 16px;
   background: var(--ink);
   color: var(--bg);
-  border: 1px solid var(--ink);
-  border-radius: var(--radius);
+  border: none;
+  border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transition: background 0.2s, transform 0.15s;
+  cursor: pointer;
 }
 .pcard-add:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  background: #00E0FF;
+  color: #0a0a0a;
   transform: scale(1.04);
 }
+
+/* chip badges */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.chip-hot { background: #ff4444; color: #fff; }
+.chip-new { background: #00E0FF; color: #0a0a0a; }

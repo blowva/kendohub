@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import ProductVisual from './ProductVisual';
 import './HeroCarousel.css';
 
@@ -11,7 +11,7 @@ const slides = [
     title: 'Cinema in\nyour pocket.',
     sub: 'The 4K portable projector. 120-inch picture, auto-focus, Android TV built in.',
     cta: { label: 'Shop projector', to: '/product/4k-projector-cinema' },
-    accent: '#7a1f1f',
+    accent: '#00E0FF',
     stage: 'stage-cinema',
     category: 'projectors',
     seed: 2,
@@ -22,7 +22,7 @@ const slides = [
     title: 'Sound,\nunleashed.',
     sub: 'Studio-grade wireless headphones. 30-hour battery. Adaptive ANC that learns your room.',
     cta: { label: 'Shop audio', to: '/shop?cat=audio' },
-    accent: '#b23a2a',
+    accent: '#00E0FF',
     stage: 'stage-audio',
     category: 'audio',
     seed: 1,
@@ -33,7 +33,7 @@ const slides = [
     title: 'Every day,\nelevated.',
     sub: 'Smart gadgets and accessories built for the details — the cable, the charger, the watch.',
     cta: { label: 'Shop gadgets', to: '/shop?cat=gadgets' },
-    accent: '#1a1613',
+    accent: '#00E0FF',
     stage: 'stage-gadgets',
     category: 'gadgets',
     seed: 14,
@@ -49,13 +49,9 @@ export default function HeroCarousel() {
     if (paused) return;
     timerRef.current = setTimeout(() => {
       setIndex((i) => (i + 1) % slides.length);
-    }, 6500);
+    }, 2500);
     return () => clearTimeout(timerRef.current);
   }, [index, paused]);
-
-  const go = (dir) => {
-    setIndex((i) => (i + dir + slides.length) % slides.length);
-  };
 
   const slide = slides[index];
 
@@ -95,18 +91,8 @@ export default function HeroCarousel() {
             </span>
           </div>
 
-          <span className="hc-corner hc-corner-tl" aria-hidden="true" />
-          <span className="hc-corner hc-corner-tr" aria-hidden="true" />
-          <span className="hc-corner hc-corner-bl" aria-hidden="true" />
-          <span className="hc-corner hc-corner-br" aria-hidden="true" />
-        </div>
-
-        <div className="hc-controls">
-          <button className="hc-arrow" onClick={() => go(-1)} aria-label="Previous slide">
-            <ChevronLeft size={18} strokeWidth={1.5} />
-          </button>
-
-          <div className="hc-dots" role="tablist">
+          {/* Dots — inside the banner, bottom-center */}
+          <div className="hc-dots-inner" role="tablist">
             {slides.map((s, i) => (
               <button
                 key={s.id}
@@ -120,17 +106,11 @@ export default function HeroCarousel() {
             ))}
           </div>
 
-          <button className="hc-arrow" onClick={() => go(1)} aria-label="Next slide">
-            <ChevronRight size={18} strokeWidth={1.5} />
-          </button>
+          <span className="hc-corner hc-corner-tl" aria-hidden="true" />
+          <span className="hc-corner hc-corner-tr" aria-hidden="true" />
+          <span className="hc-corner hc-corner-bl" aria-hidden="true" />
+          <span className="hc-corner hc-corner-br" aria-hidden="true" />
         </div>
-
-        <dl className="hc-stats">
-          <div><dt>Free shipping</dt><dd>$200+</dd></div>
-          <div><dt>Returns</dt><dd>30 days</dd></div>
-          <div><dt>Warranty</dt><dd>2 years</dd></div>
-          <div><dt>Rated</dt><dd>4.6 ★</dd></div>
-        </dl>
       </div>
     </section>
   );

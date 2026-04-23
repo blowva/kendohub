@@ -1,15 +1,26 @@
-import { Link, NavLink } from 'react-router-dom';
-import { ShoppingBag, Search, Sun, Moon, User, Menu, X } from 'lucide-react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { ShoppingBag, Search, Sun, Moon, Menu, X, Home, Flame, Sparkle, Info, User, Shield, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import './Header.css';
 
+const NAV_ITEMS = [
+  { label: 'Home',         to: '/',                icon: Home },
+  { label: 'Shop',         to: '/shop',            icon: ShoppingBag },
+  { label: 'Hot Drops',    to: '/shop?filter=hot', icon: Flame },
+  { label: 'New Arrivals', to: '/shop?filter=new', icon: Sparkle },
+  { label: 'About',        to: '/about',           icon: Info },
+  { label: 'Account',      to: '/account',         icon: User },
+  { label: 'Policies',     to: '/policies',        icon: Shield },
+];
+
 export default function Header() {
   const { itemCount } = useCart();
   const { theme, toggle } = useTheme();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -17,42 +28,31 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Lock body scroll when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
+
+  // Close drawer on navigation
+  useEffect(() => { setDrawerOpen(false); }, [location]);
+
+  const close = () => setDrawerOpen(false);
+
   return (
     <>
-      <div className="ticker">
-        <div className="ticker-track">
-          <span>◆ FREE SHIPPING OVER $200</span>
-          <span>◆ 30-DAY RETURNS</span>
-          <span>◆ AUTHORISED DEALER</span>
-          <span>◆ NEW: 4K PROJECTOR — IN STOCK</span>
-          <span>◆ FREE SHIPPING OVER $200</span>
-          <span>◆ 30-DAY RETURNS</span>
-          <span>◆ AUTHORISED DEALER</span>
-          <span>◆ NEW: 4K PROJECTOR — IN STOCK</span>
-        </div>
-      </div>
-
       <header className={`header ${scrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-inner">
+          <button className="icon-btn" aria-label="Menu" onClick={() => setDrawerOpen((o) => !o)}>
+            <Menu size={20} />
+          </button>
+
           <Link to="/" className="logo" aria-label="Shoply home">
             <span className="logo-mark">◆</span>
             <span className="logo-wordmark">Shoply</span>
           </Link>
 
-          <nav className="nav-desktop" aria-label="Primary">
-            <NavLink to="/shop" className={({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`}>
-              Shop
-            </NavLink>
-            <NavLink to="/shop?filter=hot" className="nav-link">
-              Hot <sup className="nav-sup">·new</sup>
-            </NavLink>
-            <NavLink to="/shop?filter=new" className="nav-link">
-              Arrivals
-            </NavLink>
-            <NavLink to="/about" className={({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`}>
-              About
-            </NavLink>
-          </nav>
+          <div className="header-spacer" />
 
           <div className="header-actions">
             <button className="icon-btn" aria-label="Search">
@@ -61,37 +61,71 @@ export default function Header() {
             <button className="icon-btn" aria-label="Toggle theme" onClick={toggle}>
               {theme === 'light' ? <Moon size={18} strokeWidth={1.5} /> : <Sun size={18} strokeWidth={1.5} />}
             </button>
-            <Link to="/account" className="icon-btn" aria-label="Account">
-              <User size={18} strokeWidth={1.5} />
-            </Link>
             <Link to="/cart" className="cart-btn" aria-label={`Cart, ${itemCount} items`}>
               <ShoppingBag size={18} strokeWidth={1.5} />
               <span className="cart-count">{itemCount}</span>
             </Link>
-            <button
-              className="icon-btn mobile-only"
-              aria-label="Menu"
-              onClick={() => setMobileOpen((o) => !o)}
-            >
-              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
           </div>
         </div>
+      </header>
 
-        {mobileOpen && (
-          <div className="mobile-menu">
-            <div className="container">
-              <nav className="nav-mobile" onClick={() => setMobileOpen(false)}>
-                <NavLink to="/shop" className="nav-mobile-link">Shop <span>→</span></NavLink>
-                <NavLink to="/shop?filter=hot" className="nav-mobile-link">Hot <span>→</span></NavLink>
-                <NavLink to="/shop?filter=new" className="nav-mobile-link">Arrivals <span>→</span></NavLink>
-                <NavLink to="/about" className="nav-mobile-link">About <span>→</span></NavLink>
-                <NavLink to="/account" className="nav-mobile-link">Account <span>→</span></NavLink>
+      {/* Drawer */}
+      {drawerOpen && (
+        <>
+          <div className="drawer-backdrop" onClick={close} aria-hidden="true" />
+          <div className="drawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
+
+            {/* Navy header */}
+            <div className="drawer-header">
+              <div className="drawer-header-top">
+                <span className="drawer-menu-label">MENU</span>
+                <button className="drawer-close" onClick={close} aria-label="Close menu">
+                  <X size={20} />
+                </button>
+              </div>
+              <p className="drawer-welcome-title">Welcome back</p>
+              <p className="drawer-welcome-sub">Sign in to track your orders</p>
+            </div>
+
+            {/* Nav items */}
+            <div className="drawer-body">
+              <nav className="drawer-nav">
+                {NAV_ITEMS.map(({ label, to, icon: Icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    className={({ isActive }) => `drawer-item${isActive ? ' is-active' : ''}`}
+                  >
+                    <span className="drawer-icon"><Icon size={18} strokeWidth={1.5} /></span>
+                    <span className="drawer-label">{label}</span>
+                    <ChevronRight size={16} strokeWidth={1.5} className="drawer-chevron" />
+                  </NavLink>
+                ))}
+
+                {/* Dark mode toggle */}
+                <div className="drawer-item drawer-item-toggle">
+                  <span className="drawer-icon">
+                    {theme === 'light' ? <Sun size={18} strokeWidth={1.5} /> : <Moon size={18} strokeWidth={1.5} />}
+                  </span>
+                  <span className="drawer-label">Dark Mode</span>
+                  <button
+                    className={`drawer-toggle ${theme === 'dark' ? 'is-on' : ''}`}
+                    onClick={toggle}
+                    aria-label="Toggle dark mode"
+                    aria-checked={theme === 'dark'}
+                    role="switch"
+                  />
+                </div>
               </nav>
             </div>
+
+            {/* Footer */}
+            <div className="drawer-footer">
+              <p>Shoply &copy; 2026</p>
+            </div>
           </div>
-        )}
-      </header>
+        </>
+      )}
     </>
   );
 }

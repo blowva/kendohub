@@ -6,18 +6,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* ---- Light theme (paper) ---- */
-  --bg: #f4efe6;
-  --bg-elevated: #faf6ee;
-  --bg-sunk: #ebe4d6;
+  /* ---- Light theme (clean white) ---- */
+  --bg: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunk: #f8f8f8;
   --ink: #1a1613;
   --ink-soft: #4a433c;
   --ink-mute: #8a8177;
-  --line: #d7cdb9;
-  --line-soft: #e5dcc8;
-  --accent: #7a1f1f;        /* deep oxblood */
-  --accent-hot: #b23a2a;    /* brick */
-  --accent-ink: #f4efe6;
+  --line: #e8e8e8;
+  --line-soft: #f0f0f0;
+  --accent: #00E0FF;        /* cyan */
+  --accent-hot: #00E0FF;
+  --accent-ink: #0a0a0a;
   --highlight: #e8c547;     /* mustard */
   --ok: #2d5e3e;
   --shadow: 0 1px 0 rgba(0,0,0,0.04), 0 18px 40px -20px rgba(26,22,19,0.18);
@@ -28,8 +28,8 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Misc */
-  --radius: 2px;
-  --radius-lg: 6px;
+  --radius: 8px;
+  --radius-lg: 16px;
   --maxw: 1340px;
   --pad-x: clamp(16px, 4vw, 48px);
 }
@@ -64,12 +64,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.4s ease, color 0.4s ease;
-
-  background-image:
-    radial-gradient(rgba(122,31,31,0.015) 1px, transparent 1px),
-    radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
-  background-size: 3px 3px, 7px 7px;
-  background-position: 0 0, 1px 2px;
 }
 
 img { max-width: 100%; display: block; }

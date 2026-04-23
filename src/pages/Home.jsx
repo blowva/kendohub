@@ -1,124 +1,145 @@
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import HeroCarousel from '../components/HeroCarousel';
+import SearchBar from '../components/SearchBar';
+import ProductVisual from '../components/ProductVisual';
 import { products, hotProducts, newProducts, categories } from '../data/products';
 import './Home.css';
 
+const CARD_COLORS = ['#F5C842', '#1B3A6B', '#E8D5B5', '#F2BEC4'];
+
+const CAT_ICONS = {
+  all: LayoutGrid,
+  projectors: Projector,
+  screens: Monitor,
+  gadgets: Cpu,
+  audio: Headphones,
+  accessories: Plug,
+};
+
+const hotAndNew = [
+  ...hotProducts.slice(0, 2),
+  ...newProducts.filter((p) => !hotProducts.some((h) => h.id === p.id)).slice(0, 2),
+].slice(0, 4);
+
 export default function Home() {
-  const featured = products.slice(0, 4);
-  const editorial = newProducts[0] || products[1];
+  const [selectedCat, setSelectedCat] = useState('all');
+  const [query, setQuery] = useState('');
+
+  const filteredProducts = useMemo(() => {
+    let result = selectedCat === 'all' ? products : products.filter((p) => p.category === selectedCat);
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.tagline?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [selectedCat, query]);
 
   return (
     <div className="page-enter">
-      {/* ===================== HERO CAROUSEL ===================== */}
       <HeroCarousel />
 
-      {/* ===================== CATEGORIES ===================== */}
+      <div className="home-search-wrap">
+        <div className="container">
+          <SearchBar onChange={setQuery} />
+        </div>
+      </div>
+
+      {/* Hot & New Arrivals */}
       <section className="section">
         <div className="container">
-          <SectionHead kicker="01 / Categories" title="By department" link="/shop" linkLabel="All products" />
-          <div className="cat-grid">
-            {categories.filter((c) => c.id !== 'all').map((c) => (
-              <Link to={`/shop?cat=${c.id}`} key={c.id} className="cat-tile">
-                <div className="cat-tile-top">
-                  <span className="mono">{c.count} products</span>
-                  <ArrowUpRight size={16} />
-                </div>
-                <h3 className="cat-tile-name display">{c.name}</h3>
-              </Link>
+          <div className="sec-head">
+            <h2 className="display sec-title">Hot &amp; New Arrivals 🔥✨</h2>
+            <Link to="/shop?filter=hot" className="sec-link">See all →</Link>
+          </div>
+          <div className="arrivals-grid">
+            {hotAndNew.map((p, i) => (
+              <ArrivalCard product={p} color={CARD_COLORS[i % CARD_COLORS.length]} key={p.id} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===================== FEATURED ===================== */}
+      {/* Categories */}
       <section className="section">
         <div className="container">
-          <SectionHead kicker="02 / Featured" title="This week's four" link="/shop?filter=hot" linkLabel="See hot drops" />
-          <div className="product-grid product-grid-4">
-            {featured.map((p, i) => (
+          <div className="sec-head">
+            <h2 className="display sec-title">Categories</h2>
+            <button className="sec-sort-btn">Sort</button>
+          </div>
+          <div className="cat-row">
+            {categories.map((c) => {
+              const Icon = CAT_ICONS[c.id] || LayoutGrid;
+              return (
+                <button
+                  key={c.id}
+                  className={`cat-chip ${selectedCat === c.id ? 'is-active' : ''}`}
+                  onClick={() => setSelectedCat(c.id)}
+                >
+                  <Icon size={18} strokeWidth={1.5} />
+                  <span className="cat-chip-name">{c.name.toUpperCase()}</span>
+                  <span className="cat-chip-count">{c.count} products</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* All Products */}
+      <section className="section section-last">
+        <div className="container">
+          <div className="sec-head">
+            <h2 className="display sec-title">All Products</h2>
+            <span className="sec-count mono">{filteredProducts.length} items</span>
+          </div>
+          <div className="product-grid product-grid-3">
+            {filteredProducts.map((p, i) => (
               <ProductCard product={p} key={p.id} index={i} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ===================== EDITORIAL SPLIT ===================== */}
-      <section className="section">
-        <div className="container">
-          <div className="editorial">
-            <div className="editorial-text">
-              <p className="eyebrow">A closer look</p>
-              <h2 className="display editorial-title">
-                The {editorial.name}.<br />
-                <em>Quietly, exceptionally good.</em>
-              </h2>
-              <p className="editorial-body">{editorial.description}</p>
-              <ul className="editorial-specs">
-                {Object.entries(editorial.specs).map(([k, v]) => (
-                  <li key={k}>
-                    <span className="mono">{k}</span>
-                    <span>{v}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link to={`/product/${editorial.slug}`} className="btn">
-                View product <ArrowRight size={14} />
-              </Link>
-            </div>
-            <div className="editorial-visual">
-              <div className="editorial-frame">
-                <ProductCard product={editorial} index={0} />
-              </div>
-              <span className="editorial-big-num display">
-                {editorial.id.replace('p', '').padStart(2, '0')}
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== NEW ARRIVALS ===================== */}
-      <section className="section">
-        <div className="container">
-          <SectionHead kicker="03 / New" title="Just landed" link="/shop?filter=new" linkLabel="All new" />
-          <div className="product-grid product-grid-4">
-            {newProducts.slice(0, 4).map((p, i) => (
-              <ProductCard product={p} key={p.id} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== MANIFESTO ===================== */}
-      <section className="manifesto">
-        <div className="container">
-          <p className="eyebrow">Manifesto</p>
-          <p className="manifesto-text display">
-            We don't sell everything. We sell <em>the one we'd keep.</em> Objects
-            chosen for how they feel at 7am, at 11pm, on the fifth year. Sound that
-            respects your ears. Light that respects the room.
-          </p>
-          <p className="mono manifesto-sig">— The Shoply team, Spring '26</p>
         </div>
       </section>
     </div>
   );
 }
 
-function SectionHead({ kicker, title, link, linkLabel }) {
+function ArrivalCard({ product, color }) {
+  const light = isLightColor(color);
   return (
-    <header className="sec-head">
-      <div>
-        <p className="eyebrow">{kicker}</p>
-        <h2 className="display sec-title">{title}</h2>
+    <Link
+      to={`/product/${product.slug}`}
+      className="arrival-card"
+      style={{ '--card-bg': color }}
+    >
+      <div className="arrival-badges">
+        {product.isHot && <span className="arrival-pill pill-hot">HOT</span>}
+        {!product.isHot && product.isNew && <span className="arrival-pill pill-new">NEW</span>}
       </div>
-      {link && (
-        <Link to={link} className="sec-link">
-          {linkLabel} <ArrowRight size={14} />
-        </Link>
-      )}
-    </header>
+      <div className="arrival-visual">
+        <ProductVisual
+          category={product.category}
+          seed={parseInt(product.id.replace('p', ''), 10)}
+        />
+      </div>
+      <div className={`arrival-info ${light ? 'on-light' : 'on-dark'}`}>
+        <p className="arrival-name">{product.name}</p>
+        <p className="arrival-price">${product.price.toFixed(2)}</p>
+      </div>
+    </Link>
   );
+}
+
+function isLightColor(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 128;
 }
