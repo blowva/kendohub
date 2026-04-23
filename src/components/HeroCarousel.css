@@ -9,9 +9,9 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 14px;
   align-items: center;
-  min-height: auto;
+  min-height: 360px;
   padding: 24px;
   border-radius: 20px;
   overflow: hidden;
@@ -73,21 +73,19 @@
 .hc-eyebrow {
   font-size: 10px;
   letter-spacing: 0.2em;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   opacity: 0.95;
 }
 .hc-title {
-  font-size: clamp(30px, 9vw, 42px);
-  font-weight: 500;
-  margin: 0 0 14px;
-  line-height: 0.98;
-  font-variation-settings: 'opsz' 144, 'SOFT' 40;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  line-height: 1.02;
 }
 .hc-title-line { display: block; }
 .hc-title em {
   font-style: italic;
   color: var(--slide-accent);
-  font-variation-settings: 'opsz' 144, 'SOFT' 100;
 }
 .stage-cinema .hc-title em,
 .stage-audio .hc-title em { color: #00E0FF; }
@@ -97,7 +95,7 @@
   line-height: 1.5;
   opacity: 0.85;
   max-width: none;
-  margin: 0 0 20px;
+  margin: 0 0 14px;
 }
 
 .hc-cta { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -125,7 +123,7 @@
   position: relative;
   z-index: 2;
   aspect-ratio: 1;
-  max-width: 200px;
+  max-width: 180px;
   margin: 0 auto;
   grid-row: 1;
   animation: hc-visual-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -181,7 +179,6 @@
   opacity: 0.25;
   pointer-events: none;
   letter-spacing: -0.02em;
-  font-variation-settings: 'opsz' 144, 'SOFT' 20;
 }
 .hc-slide-num-total {
   font-size: 0.4em;
@@ -252,7 +249,7 @@
     grid-row: auto;
   }
   .hc-eyebrow { font-size: 11px; margin-bottom: 20px; }
-  .hc-title { font-size: clamp(44px, 5vw, 64px); margin-bottom: 18px; }
+  .hc-title { font-size: clamp(42px, 5vw, 60px); margin-bottom: 18px; font-weight: 700; }
   .hc-sub { font-size: 14px; max-width: 420px; margin-bottom: 24px; }
   .hc-slide-num { font-size: 80px; }
   .hc-dots-inner { bottom: 20px; gap: 6px; }
@@ -286,7 +283,7 @@
     border-radius: 24px;
   }
   .hc-visual { max-width: 380px; }
-  .hc-title { font-size: clamp(56px, 5.5vw, 80px); margin-bottom: 20px; }
+  .hc-title { font-size: clamp(52px, 5.5vw, 76px); margin-bottom: 20px; }
   .hc-sub { font-size: 16px; max-width: 420px; margin-bottom: 28px; }
   .hc-slide-num { font-size: 100px; }
   .hc-dots-inner { bottom: 24px; gap: 6px; }

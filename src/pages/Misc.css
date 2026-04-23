@@ -13,7 +13,6 @@
 .misc-title em {
   font-style: italic;
   color: var(--accent);
-  font-variation-settings: 'opsz' 144, 'SOFT' 100;
 }
 
 /* ============ About ============ */

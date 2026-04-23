@@ -54,11 +54,11 @@
 .sec-sort-btn:hover { border-color: var(--ink); color: var(--ink); }
 .sec-count { color: var(--ink-mute); font-size: 12px; white-space: nowrap; }
 
-/* ---- HOT & NEW ARRIVALS (2 cols on mobile) ---- */
-.arrivals-grid {
+/* ---- HOT & NEW ARRIVALS (always 3 cols) ---- */
+.hot-new-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 .arrival-card {
   display: flex;
@@ -96,32 +96,36 @@
 .pill-new { background: #00E0FF; color: #0a0a0a; }
 .arrival-visual {
   flex: 1;
-  min-height: 140px;
+  min-height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px 10px;
+  padding: 16px 12px 8px;
 }
-.arrival-visual svg { max-height: 120px; width: 100%; }
-.arrival-info { padding: 10px 14px 16px; }
+.arrival-visual svg { max-height: 90px; width: 100%; }
+.arrival-info { padding: 12px; }
 .arrival-info.on-dark { color: #fff; }
 .arrival-info.on-light { color: #1a1613; }
 .arrival-name {
   font-family: var(--font-display);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0 0 4px;
   letter-spacing: -0.01em;
   line-height: 1.2;
-  font-variation-settings: 'opsz' 72, 'SOFT' 30;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 .arrival-price {
   font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   margin: 0;
   letter-spacing: -0.02em;
 }
+.arrival-tagline { display: none; }
 
 /* ---- CATEGORIES (3 cols on mobile) ---- */
 .cat-row {
@@ -179,11 +183,11 @@
   .sec-title { font-size: clamp(26px, 4vw, 34px); }
   .sec-link, .sec-sort-btn { font-size: 11px; padding: 8px 18px; }
 
-  .arrivals-grid { gap: 14px; }
-  .arrival-visual { min-height: 170px; padding: 28px 20px 14px; }
-  .arrival-visual svg { max-height: 140px; }
+  .hot-new-grid { gap: 16px; }
+  .arrival-visual { min-height: 150px; padding: 24px 18px 12px; }
+  .arrival-visual svg { max-height: 120px; }
   .arrival-name { font-size: 14px; }
-  .arrival-price { font-size: 20px; }
+  .arrival-price { font-size: 18px; }
 
   .cat-row { grid-template-columns: repeat(6, 1fr); gap: 10px; }
   .cat-chip { padding: 18px 10px 14px; }
@@ -203,12 +207,12 @@
   .sec-head { margin-bottom: 32px; padding-bottom: 16px; gap: 24px; }
   .sec-title { font-size: clamp(32px, 3.5vw, 44px); }
 
-  .arrivals-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .hot-new-grid { gap: 20px; }
   .arrival-card { border-radius: 16px; }
-  .arrival-visual { min-height: 200px; padding: 32px 24px 16px; }
-  .arrival-visual svg { max-height: 160px; }
+  .arrival-visual { min-height: 180px; padding: 28px 22px 14px; }
+  .arrival-visual svg { max-height: 150px; }
   .arrival-name { font-size: 15px; margin-bottom: 6px; }
-  .arrival-price { font-size: 22px; }
+  .arrival-price { font-size: 20px; }
   .arrival-pill { font-size: 9px; padding: 4px 10px; letter-spacing: 0.2em; }
 
   .cat-row { gap: 12px; }

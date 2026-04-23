@@ -1,18 +1,21 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Search, Sun, Moon, Menu, X, Home, Flame, Sparkle, Info, User, Shield, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Search, Sun, Moon, Menu, X, Home, Flame, Sparkles, Ticket, Info, Users, User, RotateCcw, FileText, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import './Header.css';
 
 const NAV_ITEMS = [
-  { label: 'Home',         to: '/',                icon: Home },
-  { label: 'Shop',         to: '/shop',            icon: ShoppingBag },
-  { label: 'Hot Drops',    to: '/shop?filter=hot', icon: Flame },
-  { label: 'New Arrivals', to: '/shop?filter=new', icon: Sparkle },
-  { label: 'About',        to: '/about',           icon: Info },
-  { label: 'Account',      to: '/account',         icon: User },
-  { label: 'Policies',     to: '/policies',        icon: Shield },
+  { label: 'Home',             to: '/',                icon: Home },
+  { label: 'Shop',             to: '/shop',            icon: ShoppingBag },
+  { label: 'Hot Drops',        to: '/shop?filter=hot', icon: Flame },
+  { label: 'New Arrivals',     to: '/shop?filter=new', icon: Sparkles },
+  { label: 'Coupon Affiliate', to: '/about',           icon: Ticket },
+  { label: 'About Affiliate',  to: '/about',           icon: Info },
+  { label: 'About',            to: '/about',           icon: Users },
+  { label: 'Account',          to: '/account',         icon: User },
+  { label: 'Refund Policy',    to: '/policies',        icon: RotateCcw },
+  { label: 'Policies',         to: '/policies',        icon: FileText },
 ];
 
 export default function Header() {

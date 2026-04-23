@@ -72,7 +72,6 @@
   font-size: 15px;
   font-weight: 500;
   margin: 0;
-  font-variation-settings: 'opsz' 72, 'SOFT' 30;
   line-height: 1.15;
 }
 .pcard-name-link { display: block; color: inherit; }

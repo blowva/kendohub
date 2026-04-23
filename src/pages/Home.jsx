@@ -59,7 +59,7 @@ export default function Home() {
             <h2 className="display sec-title">Hot &amp; New Arrivals 🔥✨</h2>
             <Link to="/shop?filter=hot" className="sec-link">See all →</Link>
           </div>
-          <div className="arrivals-grid">
+          <div className="hot-new-grid">
             {hotAndNew.map((p, i) => (
               <ArrivalCard product={p} color={CARD_COLORS[i % CARD_COLORS.length]} key={p.id} />
             ))}

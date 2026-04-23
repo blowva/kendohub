@@ -35,10 +35,9 @@
 }
 .logo-wordmark {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 20px;
   letter-spacing: -0.02em;
-  font-variation-settings: 'opsz' 144, 'SOFT' 20;
 }
 
 @media (min-width: 640px) {
@@ -121,7 +120,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: min(380px, 92vw);
+  width: min(320px, 75vw);
   height: 100vh;
   z-index: 90;
   display: flex;
