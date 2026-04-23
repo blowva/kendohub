@@ -1,13 +1,15 @@
+/* Mobile-first */
 .search-bar {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   background: var(--bg-sunk);
   border: 1px solid var(--line-soft);
   border-radius: 999px;
-  padding: 18px 28px;
+  padding: 12px 18px;
   width: 100%;
   transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 44px;
 }
 .search-bar:focus-within {
   border-color: #00E0FF;
@@ -19,9 +21,19 @@
   background: none;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--ink);
   font-family: var(--font-body);
+  min-width: 0;
 }
 .sb-input::placeholder { color: var(--ink-mute); }
 .sb-input::-webkit-search-cancel-button { display: none; }
+
+@media (min-width: 640px) {
+  .search-bar { padding: 14px 22px; gap: 12px; }
+  .sb-input { font-size: 15px; }
+}
+@media (min-width: 1024px) {
+  .search-bar { padding: 18px 28px; gap: 14px; }
+  .sb-input { font-size: 16px; }
+}

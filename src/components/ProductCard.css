@@ -1,12 +1,15 @@
+/* ========================================================================
+   MOBILE-FIRST
+   ======================================================================== */
 .pcard {
   position: relative;
   display: flex;
   flex-direction: column;
   background: var(--bg-elevated);
   border: 1px solid transparent;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 8px -2px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s;
   opacity: 0;
   animation: pcard-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
@@ -16,9 +19,10 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .pcard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.14);
 }
+.pcard:active { transform: scale(0.99); }
 
 .pcard-media {
   position: relative;
@@ -34,18 +38,18 @@
 
 .pcard-badges {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  left: 8px;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   z-index: 2;
 }
 
 .pcard-body {
-  padding: 20px 20px 18px;
+  padding: 12px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   flex: 1;
 }
 .pcard-meta {
@@ -54,22 +58,22 @@
   align-items: center;
   color: var(--ink-mute);
 }
-.pcard-cat { font-size: 10px; }
+.pcard-cat { font-size: 9px; }
 .pcard-rating {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--ink-soft);
 }
 
 .pcard-name {
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   margin: 0;
   font-variation-settings: 'opsz' 72, 'SOFT' 30;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 .pcard-name-link { display: block; color: inherit; }
 .pcard-name-link:hover .pcard-name { color: #00E0FF; }
@@ -77,8 +81,8 @@
 .pcard-tag {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.4;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -87,26 +91,27 @@
 
 .pcard-foot {
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 6px;
   border-top: 1px solid var(--line-soft);
 }
 .pcard-prices {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
 }
 .pcard-price {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: 19px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 .pcard-old {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--ink-mute);
   text-decoration: line-through;
 }
@@ -114,36 +119,67 @@
 .pcard-add {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
+  gap: 4px;
+  padding: 8px 12px;
   background: var(--ink);
   color: var(--bg);
   border: none;
   border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: 9px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: background 0.2s, transform 0.15s;
   cursor: pointer;
+  min-height: 32px;
 }
-.pcard-add:hover {
-  background: #00E0FF;
-  color: #0a0a0a;
-  transform: scale(1.04);
-}
+.pcard-add:hover { background: #00E0FF; color: #0a0a0a; transform: scale(1.04); }
+.pcard-add:active { transform: scale(0.96); }
 
 /* chip badges */
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 3px 8px;
   font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.16em;
+  font-size: 8px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   border-radius: 999px;
   font-weight: 600;
 }
 .chip-hot { background: #ff4444; color: #fff; }
 .chip-new { background: #00E0FF; color: #0a0a0a; }
+
+/* ======================================================================
+   TABLET — ≥ 640px
+   ====================================================================== */
+@media (min-width: 640px) {
+  .pcard { border-radius: 14px; }
+  .pcard-body { padding: 16px 16px 14px; gap: 8px; }
+  .pcard-badges { top: 10px; left: 10px; gap: 5px; }
+  .pcard-cat { font-size: 10px; }
+  .pcard-rating { font-size: 11px; }
+  .pcard-name { font-size: 17px; }
+  .pcard-tag { font-size: 13px; }
+  .pcard-foot { padding-top: 12px; }
+  .pcard-price { font-size: 22px; }
+  .pcard-old { font-size: 11px; }
+  .pcard-add { padding: 8px 14px; font-size: 10px; gap: 5px; }
+  .chip { padding: 4px 9px; font-size: 9px; letter-spacing: 0.16em; }
+}
+
+/* ======================================================================
+   DESKTOP — ≥ 1024px
+   ====================================================================== */
+@media (min-width: 1024px) {
+  .pcard { border-radius: 16px; box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.08); }
+  .pcard:hover { transform: translateY(-5px); box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.14); }
+  .pcard-body { padding: 20px 20px 18px; gap: 10px; }
+  .pcard-badges { top: 12px; left: 12px; gap: 6px; }
+  .pcard-name { font-size: 20px; }
+  .pcard-tag { font-size: 13px; }
+  .pcard-foot { padding-top: 14px; }
+  .pcard-price { font-size: 26px; }
+  .pcard-add { padding: 9px 16px; gap: 6px; }
+}

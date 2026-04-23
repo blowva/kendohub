@@ -16,39 +16,45 @@
 .header-inner {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  gap: 8px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .header-spacer { flex: 1; }
 
 .logo {
   display: inline-flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   color: var(--ink);
 }
 .logo-mark {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--accent);
   transform: translateY(1px);
 }
 .logo-wordmark {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: -0.02em;
   font-variation-settings: 'opsz' 144, 'SOFT' 20;
+}
+
+@media (min-width: 640px) {
+  .header-inner { gap: 16px; padding-top: 16px; padding-bottom: 16px; }
+  .logo-mark { font-size: 18px; }
+  .logo-wordmark { font-size: 24px; gap: 10px; }
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -66,8 +72,8 @@
 
 .cart-btn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
