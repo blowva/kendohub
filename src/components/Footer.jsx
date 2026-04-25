@@ -1,78 +1,78 @@
-import { Link } from 'react-router-dom';
-import './Footer.css';
+import { Link } from 'react-router-dom'
+import { Instagram, Twitter, Youtube, Github } from 'lucide-react'
+import './Footer.css'
 
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="container">
-        <div className="footer-hero">
-          <div className="footer-hero-text">
-            <p className="eyebrow">Subscribe</p>
-            <h2 className="display footer-hero-title">
-              First to know, <em>first to own.</em>
-            </h2>
-          </div>
-          <form className="footer-form" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="your@email.com"
-              aria-label="Email address"
-              className="footer-input"
-            />
-            <button type="submit" className="btn btn-accent">
-              Subscribe →
-            </button>
-          </form>
-        </div>
-
+      <div className="footer-container">
         <div className="footer-grid">
-          <div className="footer-col footer-brand">
-            <div className="logo">
-              <span className="logo-mark">◆</span>
-              <span className="logo-wordmark">Shoply</span>
-            </div>
-            <p className="footer-tag">
-              Studio-grade audio, cinema projectors, and everyday tools. Curated for people who notice the details.
+          <div className="footer-brand">
+            <Link to="/" className="footer-logo">
+              <span className="footer-logo-mark">◆</span>
+              <span className="footer-logo-text">Shoply</span>
+            </Link>
+            <p className="footer-tagline">
+              Studio-grade audio, cinema projectors, and the gadgets that make
+              every day feel a little more dialed in.
             </p>
-            <p className="mono footer-est">EST. 2026</p>
+            <div className="footer-socials">
+              <a href="#" aria-label="Instagram" className="footer-social">
+                <Instagram size={18} />
+              </a>
+              <a href="#" aria-label="Twitter" className="footer-social">
+                <Twitter size={18} />
+              </a>
+              <a href="#" aria-label="YouTube" className="footer-social">
+                <Youtube size={18} />
+              </a>
+              <a href="#" aria-label="GitHub" className="footer-social">
+                <Github size={18} />
+              </a>
+            </div>
           </div>
 
           <div className="footer-col">
-            <p className="eyebrow">Shop</p>
-            <ul>
+            <h4 className="footer-col-title">Shop</h4>
+            <ul className="footer-list">
               <li><Link to="/shop">All products</Link></li>
               <li><Link to="/shop?filter=new">New arrivals</Link></li>
               <li><Link to="/shop?filter=hot">Hot drops</Link></li>
-              <li><Link to="/shop">Coming soon</Link></li>
+              <li><Link to="/shop?category=projectors">Projectors</Link></li>
+              <li><Link to="/shop?category=audio">Audio</Link></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <p className="eyebrow">Company</p>
-            <ul>
-              <li><Link to="/about">About</Link></li>
-              <li><Link to="/about">Affiliate</Link></li>
-              <li><Link to="/about">Careers</Link></li>
-              <li><Link to="/about">Press</Link></li>
-            </ul>
-          </div>
-
-          <div className="footer-col">
-            <p className="eyebrow">Support</p>
-            <ul>
-              <li><Link to="/policies">Refund policy</Link></li>
-              <li><Link to="/policies">Terms & conditions</Link></li>
+            <h4 className="footer-col-title">Help</h4>
+            <ul className="footer-list">
+              <li><Link to="/account">My account</Link></li>
+              <li><Link to="/cart">Cart</Link></li>
               <li><Link to="/policies">Shipping</Link></li>
-              <li><Link to="/policies">Contact</Link></li>
+              <li><Link to="/policies">Returns</Link></li>
+              <li><Link to="/about">Contact</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h4 className="footer-col-title">Company</h4>
+            <ul className="footer-list">
+              <li><Link to="/about">About</Link></li>
+              <li><Link to="/policies">Privacy</Link></li>
+              <li><Link to="/policies">Terms</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p className="mono">© 2026 Shoply — Crafted with intent.</p>
-          <p className="mono">Made for the curious.</p>
+          <p className="footer-copy">
+            © {new Date().getFullYear()} Shoply. All rights reserved.
+          </p>
+          <p className="footer-built">
+            Crafted in Lagos · Shipped worldwide
+          </p>
         </div>
       </div>
     </footer>
-  );
+  )
 }
