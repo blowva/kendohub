@@ -1,16 +1,17 @@
 .hc {
-  margin: 16px 0 24px;
+  margin: 0 0 24px;
   position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
 }
 
 .hc-track {
   position: relative;
   width: 100%;
-  border-radius: 20px;
+  border-radius: 0;
   overflow: hidden;
   aspect-ratio: 16 / 9;
   background: var(--bg-sunk);
-  box-shadow: 0 4px 20px -8px rgba(10, 22, 40, 0.15);
 }
 
 .hc-slide {
@@ -24,11 +25,13 @@
   transition: opacity 0.6s ease;
   pointer-events: none;
   cursor: pointer;
+  z-index: 1;
 }
 
 .hc-slide.is-active {
   opacity: 1;
   pointer-events: auto;
+  z-index: 2;
 }
 
 .hc-placeholder {
@@ -73,7 +76,7 @@
   transform: translateX(-50%);
   display: flex;
   gap: 6px;
-  z-index: 2;
+  z-index: 3;
 }
 
 .hc-dot {
@@ -95,13 +98,12 @@
 @media (min-width: 768px) {
   .hc-track {
     aspect-ratio: 21 / 9;
-    border-radius: 24px;
   }
 }
 
 @media (min-width: 1024px) {
   .hc-track {
     aspect-ratio: 24 / 9;
-    max-height: 360px;
+    max-height: 380px;
   }
 }
