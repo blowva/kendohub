@@ -1,171 +1,262 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Minus, Plus, Star, Truck, RotateCcw, Shield, Check } from 'lucide-react';
-import ProductVisual from '../components/ProductVisual';
-import ProductCard from '../components/ProductCard';
-import { getProductBySlug, products } from '../data/products';
-import { useCart } from '../context/CartContext';
-import './ProductDetail.css';
+import { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store, ChevronDown, ChevronRight, Play } from 'lucide-react'
+import { products } from '../data/products'
+import { useCart } from '../context/CartContext'
+import ProductVisual from '../components/ProductVisual'
+import ProductCard from '../components/ProductCard'
+import './ProductDetail.css'
 
 export default function ProductDetail() {
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const product = getProductBySlug(slug);
-  const { add } = useCart();
-  const [qty, setQty] = useState(1);
-  const [justAdded, setJustAdded] = useState(false);
+  const { slug } = useParams()
+  const product = products.find(p => p.slug === slug)
+  const { addToCart } = useCart()
 
-  useEffect(() => { window.scrollTo({ top: 0 }); }, [slug]);
+  const [activeImage, setActiveImage] = useState(0)
+  const [selectedVariant, setSelectedVariant] = useState(null)
+  const [openSection, setOpenSection] = useState(null)
+  const [wishlisted, setWishlisted] = useState(false)
 
   if (!product) {
     return (
-      <div className="container page-enter pd-404">
-        <p className="eyebrow">404</p>
-        <h1 className="display">Product not found.</h1>
-        <Link to="/shop" className="btn">← Back to shop</Link>
+      <div className="pdp-notfound">
+        <h1>Product not found</h1>
+        <Link to="/shop" className="pdp-back-link">← Back to shop</Link>
       </div>
-    );
+    )
   }
 
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
+  const variants = product.variants || []
+  const hasDiscount = product.oldPrice && product.oldPrice > product.price
+  const discountPercent = hasDiscount
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : 0
 
-  const handleAdd = () => {
-    for (let i = 0; i < qty; i++) add(product);
-    setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 2000);
-  };
+  const relatedProducts = products
+    .filter(p => p.id !== product.id && p.category === product.category)
+    .slice(0, 6)
 
-  const productSeed = parseInt(product.id.replace('p', ''), 10);
+  const toggleSection = (name) => {
+    setOpenSection(openSection === name ? null : name)
+  }
+
+  const handleAddToCart = () => {
+    addToCart(product, 1)
+  }
 
   return (
-    <div className="page-enter pd">
-      <div className="container">
-        <button className="pd-back" onClick={() => navigate(-1)}>
-          <ArrowLeft size={14} /> Back
-        </button>
+    <div className="pdp">
+      {/* TOP BAR */}
+      <div className="pdp-topbar">
+        <Link to="/shop" className="pdp-icon-btn" aria-label="Back">
+          <ArrowLeft size={20} />
+        </Link>
+        <Link to="/cart" className="pdp-icon-btn" aria-label="Cart">
+          <ShoppingBag size={20} />
+        </Link>
+      </div>
 
-        <div className="pd-grid">
-          {/* ======== Gallery ======== */}
-          <div className="pd-gallery">
-            <div className="pd-main-visual">
-              <div className="pd-badges">
-                {product.isHot && <span className="chip chip-hot">Hot</span>}
-                {product.isNew && <span className="chip chip-new">New</span>}
-                {product.tags.map((t) => (
-                  <span className="chip" key={t}>{t}</span>
-                ))}
-              </div>
-              <span className="pd-num mono">№ {product.id.replace('p', '').padStart(3, '0')}</span>
-              <ProductVisual category={product.category} seed={productSeed} size="lg" />
-            </div>
-            <div className="pd-thumbs">
-              {[0, 1, 2, 3].map((i) => (
-                <button key={i} className={`pd-thumb ${i === 0 ? 'is-active' : ''}`}>
-                  <ProductVisual category={product.category} seed={productSeed + i * 7} />
+      {/* IMAGE GALLERY */}
+      <div className="pdp-gallery">
+        <div className="pdp-image-main">
+          <ProductVisual product={product} />
+        </div>
+        <div className="pdp-image-dots">
+          <button
+            className={`pdp-dot ${activeImage === 0 ? 'is-active' : ''}`}
+            onClick={() => setActiveImage(0)}
+            aria-label="Image 1"
+          />
+          <button
+            className={`pdp-dot ${activeImage === 1 ? 'is-active' : ''}`}
+            onClick={() => setActiveImage(1)}
+            aria-label="Image 2"
+          />
+          <button
+            className={`pdp-dot ${activeImage === 2 ? 'is-active' : ''}`}
+            onClick={() => setActiveImage(2)}
+            aria-label="Image 3"
+          />
+        </div>
+      </div>
+
+      {/* INFO BLOCK */}
+      <div className="pdp-info">
+        <p className="pdp-brand">SHOPLY</p>
+        <h1 className="pdp-name">{product.name}</h1>
+
+        <div className="pdp-rating-row">
+          <Star size={14} fill="#FFB800" stroke="#FFB800" />
+          <span className="pdp-rating-num">{product.rating}</span>
+          <span className="pdp-reviews">({product.reviewCount} Reviews)</span>
+        </div>
+
+        <div className="pdp-price-row">
+          <span className="pdp-price">${product.price.toFixed(2)} USD</span>
+          {hasDiscount && (
+            <>
+              <span className="pdp-old-price">${product.oldPrice.toFixed(2)} USD</span>
+              <span className="pdp-discount">-{discountPercent}%</span>
+            </>
+          )}
+        </div>
+
+        {/* VARIANTS */}
+        {variants.length > 0 && (
+          <div className="pdp-variants">
+            <p className="pdp-variants-label">
+              {product.variantType === 'color' ? 'Color' : 'Size'}
+            </p>
+            <div className="pdp-variants-list">
+              {variants.map((v) => (
+                <button
+                  key={v}
+                  className={`pdp-variant ${selectedVariant === v ? 'is-active' : ''}`}
+                  onClick={() => setSelectedVariant(v)}
+                >
+                  {v}
                 </button>
               ))}
             </div>
           </div>
+        )}
 
-          {/* ======== Info ======== */}
-          <div className="pd-info">
-            <p className="eyebrow pd-breadcrumb">
-              <Link to="/shop">Shop</Link> / <Link to={`/shop?cat=${product.category}`}>{product.category}</Link>
-            </p>
-
-            <h1 className="display pd-name">{product.name}</h1>
-            <p className="pd-tagline">{product.tagline}</p>
-
-            <div className="pd-meta">
-              <span className="pd-rating">
-                <Star size={14} fill="currentColor" strokeWidth={0} /> {product.rating}
-                <span className="pd-review-count">({product.reviewCount.toLocaleString()} reviews)</span>
-              </span>
-              <span className="pd-stock">
-                {product.stock > 20 ? (
-                  <><span className="pd-stock-dot pd-stock-ok" /> In stock</>
-                ) : product.stock > 0 ? (
-                  <><span className="pd-stock-dot pd-stock-low" /> Only {product.stock} left</>
-                ) : (
-                  <><span className="pd-stock-dot pd-stock-out" /> Out of stock</>
-                )}
-              </span>
-            </div>
-
-            <div className="pd-prices">
-              <span className="pd-price display">${product.price.toFixed(2)}</span>
-              {product.oldPrice && (
-                <>
-                  <span className="pd-old">${product.oldPrice.toFixed(2)}</span>
-                  <span className="pd-save mono">
-                    Save {Math.round((1 - product.price / product.oldPrice) * 100)}%
-                  </span>
-                </>
-              )}
-            </div>
-
-            <p className="pd-desc">{product.description}</p>
-
-            <div className="pd-qty-row">
-              <div className="pd-qty">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity">
-                  <Minus size={14} />
-                </button>
-                <span>{qty}</span>
-                <button onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity">
-                  <Plus size={14} />
-                </button>
-              </div>
-              <button className={`btn btn-accent pd-add ${justAdded ? 'is-added' : ''}`} onClick={handleAdd}>
-                {justAdded ? (
-                  <><Check size={14} /> Added to cart</>
-                ) : (
-                  <>Add to cart — ${(product.price * qty).toFixed(2)}</>
-                )}
-              </button>
-            </div>
-
-            <ul className="pd-perks">
-              <li><Truck size={16} strokeWidth={1.3} /> Free shipping over $200</li>
-              <li><RotateCcw size={16} strokeWidth={1.3} /> 30-day returns, no questions</li>
-              <li><Shield size={16} strokeWidth={1.3} /> 2-year manufacturer warranty</li>
-            </ul>
+        {/* INFO ICONS */}
+        <div className="pdp-meta-list">
+          <div className="pdp-meta-item">
+            <Package size={16} className="pdp-meta-icon" />
+            <span className={product.stock > 0 ? 'pdp-stock-in' : 'pdp-stock-out'}>
+              {product.stock > 0 ? 'In stock' : 'Out of stock'}
+            </span>
+          </div>
+          <div className="pdp-meta-item">
+            <Truck size={16} className="pdp-meta-icon" />
+            <span>Free delivery</span>
+          </div>
+          <div className="pdp-meta-item">
+            <Store size={16} className="pdp-meta-icon" />
+            <span>Available in nearest store</span>
           </div>
         </div>
 
-        {/* ======== Specs ======== */}
-        <section className="pd-specs-block">
-          <div className="pd-specs-head">
-            <p className="eyebrow">Specifications</p>
-            <h2 className="display pd-specs-title">The details that matter.</h2>
-          </div>
-          <dl className="pd-specs">
-            {Object.entries(product.specs).map(([k, v]) => (
-              <div key={k} className="pd-spec-row">
-                <dt className="mono">{k}</dt>
-                <dd>{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        {/* SHORT DESCRIPTION */}
+        <p className="pdp-tagline">{product.tagline || product.description}</p>
 
-        {/* ======== Related ======== */}
-        {related.length > 0 && (
-          <section className="pd-related">
-            <header className="sec-head">
-              <div>
-                <p className="eyebrow">You may also like</p>
-                <h2 className="display sec-title">From the same shelf</h2>
+        {/* ACCORDION SECTIONS */}
+        <div className="pdp-sections">
+          <button
+            className={`pdp-section ${openSection === 'description' ? 'is-open' : ''}`}
+            onClick={() => toggleSection('description')}
+          >
+            <span>Description</span>
+            <ChevronDown size={18} className="pdp-section-icon" />
+          </button>
+          {openSection === 'description' && (
+            <div className="pdp-section-body">
+              <p>{product.description}</p>
+            </div>
+          )}
+
+          <button
+            className={`pdp-section ${openSection === 'video' ? 'is-open' : ''}`}
+            onClick={() => toggleSection('video')}
+          >
+            <span>Video</span>
+            <ChevronDown size={18} className="pdp-section-icon" />
+          </button>
+          {openSection === 'video' && (
+            <div className="pdp-section-body">
+              <div className="pdp-video-placeholder">
+                <Play size={32} fill="#FFFFFF" stroke="none" />
+                <p className="pdp-video-text">Product video coming soon</p>
+                <p className="pdp-video-hint">YouTube embed will appear here</p>
               </div>
-            </header>
-            <div className="product-grid product-grid-3">
-              {related.map((p, i) => (
-                <ProductCard product={p} key={p.id} index={i} />
+            </div>
+          )}
+
+          <button
+            className={`pdp-section ${openSection === 'specs' ? 'is-open' : ''}`}
+            onClick={() => toggleSection('specs')}
+          >
+            <span>Specs</span>
+            <ChevronDown size={18} className="pdp-section-icon" />
+          </button>
+          {openSection === 'specs' && (
+            <div className="pdp-section-body">
+              {product.specs && Object.keys(product.specs).length > 0 ? (
+                <ul className="pdp-specs-list">
+                  {Object.entries(product.specs).map(([key, value]) => (
+                    <li key={key}>
+                      <span className="pdp-spec-key">{key}</span>
+                      <span className="pdp-spec-val">{value}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="pdp-empty">Specs coming soon</p>
+              )}
+            </div>
+          )}
+
+          <button
+            className={`pdp-section ${openSection === 'box' ? 'is-open' : ''}`}
+            onClick={() => toggleSection('box')}
+          >
+            <span>What's in the box</span>
+            <ChevronDown size={18} className="pdp-section-icon" />
+          </button>
+          {openSection === 'box' && (
+            <div className="pdp-section-body">
+              {product.boxContents && product.boxContents.length > 0 ? (
+                <ul className="pdp-box-list">
+                  {product.boxContents.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <ul className="pdp-box-list">
+                  <li>1x {product.name}</li>
+                  <li>1x User manual</li>
+                  <li>1x Charging cable (where applicable)</li>
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* RELATED PRODUCTS */}
+        {relatedProducts.length > 0 && (
+          <div className="pdp-related">
+            <div className="pdp-related-head">
+              <h2 className="pdp-related-title">You may also like</h2>
+              <Link to="/shop" className="pdp-related-link">
+                See all <ChevronRight size={14} />
+              </Link>
+            </div>
+            <div className="pdp-related-scroller">
+              {relatedProducts.map(p => (
+                <div key={p.id} className="pdp-related-card">
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
-          </section>
+          </div>
         )}
       </div>
+
+      {/* STICKY BOTTOM BAR */}
+      <div className="pdp-bottombar">
+        <button
+          className={`pdp-wishlist-btn ${wishlisted ? 'is-active' : ''}`}
+          onClick={() => setWishlisted(!wishlisted)}
+          aria-label="Wishlist"
+        >
+          <Heart size={20} fill={wishlisted ? '#FF3B5C' : 'none'} stroke={wishlisted ? '#FF3B5C' : '#0A1628'} />
+        </button>
+        <button className="pdp-add-btn" onClick={handleAddToCart}>
+          Add to Cart
+        </button>
+      </div>
     </div>
-  );
+  )
 }
