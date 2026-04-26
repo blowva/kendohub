@@ -501,3 +501,17 @@ export const products = [
     isNew: false,
   },
 ];
+// ============ DERIVED EXPORTS ============
+// These are used by Home.jsx and other pages
+
+export const hotProducts = products.filter(p => p.isHot);
+export const newProducts = products.filter(p => p.isNew);
+
+export const categories = [
+  { slug: 'all', label: 'All' },
+  { slug: 'projectors', label: 'Projectors' },
+  { slug: 'screens', label: 'Screens' },
+  { slug: 'audio', label: 'Audio' },
+  { slug: 'gadgets', label: 'Gadgets' },
+  { slug: 'accessories', label: 'Accessories' },
+];
