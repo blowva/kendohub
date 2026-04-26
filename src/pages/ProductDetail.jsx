@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store, ChevronDown, ChevronRight, Play } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store, ChevronDown, ChevronRight, Play, Image as ImageIcon } from 'lucide-react'
 import { products } from '../data/products'
 import { useCart } from '../context/CartContext'
 import ProductVisual from '../components/ProductVisual'
@@ -31,6 +31,20 @@ export default function ProductDetail() {
   const discountPercent = hasDiscount
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0
+
+  // Normalize box items: support both new (boxItems with photos) and old (boxContents string array) formats
+  let boxItems = []
+  if (product.boxItems && product.boxItems.length > 0) {
+    boxItems = product.boxItems
+  } else if (product.boxContents && product.boxContents.length > 0) {
+    boxItems = product.boxContents.map(label => ({ name: label, image: null }))
+  } else {
+    boxItems = [
+      { name: product.name, image: null },
+      { name: 'User manual', image: null },
+      { name: 'Charging cable', image: null },
+    ]
+  }
 
   const relatedProducts = products
     .filter(p => p.id !== product.id && p.category === product.category)
@@ -139,24 +153,34 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* SHORT DESCRIPTION */}
+        {/* SHORT TAGLINE */}
         <p className="pdp-tagline">{product.tagline || product.description}</p>
 
-        {/* ACCORDION SECTIONS */}
-        <div className="pdp-sections">
-          <button
-            className={`pdp-section ${openSection === 'description' ? 'is-open' : ''}`}
-            onClick={() => toggleSection('description')}
-          >
-            <span>Description</span>
-            <ChevronDown size={18} className="pdp-section-icon" />
-          </button>
-          {openSection === 'description' && (
-            <div className="pdp-section-body">
-              <p>{product.description}</p>
-            </div>
-          )}
+        {/* DESCRIPTION (always expanded, no toggle) */}
+        <div className="pdp-static-section">
+          <h2 className="pdp-static-title">Description</h2>
+          <p className="pdp-static-body">{product.description}</p>
+        </div>
 
+        {/* SPECIFICATIONS (always expanded, no toggle) */}
+        <div className="pdp-static-section">
+          <h2 className="pdp-static-title">Specifications</h2>
+          {product.specs && Object.keys(product.specs).length > 0 ? (
+            <ul className="pdp-specs-list">
+              {Object.entries(product.specs).map(([key, value]) => (
+                <li key={key}>
+                  <span className="pdp-spec-key">{key}</span>
+                  <span className="pdp-spec-val">{value}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="pdp-empty">Specifications coming soon</p>
+          )}
+        </div>
+
+        {/* COLLAPSIBLE SECTIONS */}
+        <div className="pdp-sections">
           <button
             className={`pdp-section ${openSection === 'video' ? 'is-open' : ''}`}
             onClick={() => toggleSection('video')}
@@ -175,30 +199,6 @@ export default function ProductDetail() {
           )}
 
           <button
-            className={`pdp-section ${openSection === 'specs' ? 'is-open' : ''}`}
-            onClick={() => toggleSection('specs')}
-          >
-            <span>Specs</span>
-            <ChevronDown size={18} className="pdp-section-icon" />
-          </button>
-          {openSection === 'specs' && (
-            <div className="pdp-section-body">
-              {product.specs && Object.keys(product.specs).length > 0 ? (
-                <ul className="pdp-specs-list">
-                  {Object.entries(product.specs).map(([key, value]) => (
-                    <li key={key}>
-                      <span className="pdp-spec-key">{key}</span>
-                      <span className="pdp-spec-val">{value}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="pdp-empty">Specs coming soon</p>
-              )}
-            </div>
-          )}
-
-          <button
             className={`pdp-section ${openSection === 'box' ? 'is-open' : ''}`}
             onClick={() => toggleSection('box')}
           >
@@ -207,19 +207,25 @@ export default function ProductDetail() {
           </button>
           {openSection === 'box' && (
             <div className="pdp-section-body">
-              {product.boxContents && product.boxContents.length > 0 ? (
-                <ul className="pdp-box-list">
-                  {product.boxContents.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              ) : (
-                <ul className="pdp-box-list">
-                  <li>1x {product.name}</li>
-                  <li>1x User manual</li>
-                  <li>1x Charging cable (where applicable)</li>
-                </ul>
-              )}
+              <div className="pdp-box-grid">
+                {boxItems.map((item, i) => (
+                  <div key={i} className="pdp-box-item">
+                    <div className="pdp-box-photo">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} />
+                      ) : (
+                        <div className="pdp-box-photo-placeholder">
+                          <ImageIcon size={28} strokeWidth={1.5} />
+                        </div>
+                      )}
+                    </div>
+                    <p className="pdp-box-label">{item.name}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="pdp-box-admin-note">
+                ⚙️ Admin: photos can be added per item from the admin panel
+              </p>
             </div>
           )}
         </div>
