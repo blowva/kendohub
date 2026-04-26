@@ -223,7 +223,7 @@
   font-weight: 600;
 }
 
-/* ============ META LIST (stock, delivery, store) ============ */
+/* ============ META LIST ============ */
 
 .pdp-meta-list {
   display: flex;
@@ -258,20 +258,44 @@
   font-weight: 600;
 }
 
-.pdp-meta-item:has(.pdp-stock-in) .pdp-meta-icon {
-  color: #16A34A;
-}
-
 /* ============ TAGLINE ============ */
 
 .pdp-tagline {
   font-size: 14px;
   color: #6B7A90;
   line-height: 1.6;
-  margin: 0 0 24px;
+  margin: 0 0 32px;
 }
 
-/* ============ ACCORDION SECTIONS ============ */
+/* ============ STATIC SECTIONS (always expanded) ============ */
+
+.pdp-static-section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #EEF2F6;
+}
+
+.pdp-static-section:last-of-type {
+  border-bottom: none;
+}
+
+.pdp-static-title {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: #0A1628;
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+
+.pdp-static-body {
+  font-size: 14px;
+  color: #6B7A90;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ============ COLLAPSIBLE SECTIONS ============ */
 
 .pdp-sections {
   display: flex;
@@ -382,9 +406,10 @@
 .pdp-specs-list li {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 1px dashed #E3E8EF;
   font-size: 13px;
+  gap: 12px;
 }
 
 .pdp-specs-list li:last-child {
@@ -402,30 +427,67 @@
   text-align: right;
 }
 
-/* ============ BOX CONTENTS ============ */
+/* ============ WHAT'S IN THE BOX (2-column photo grid) ============ */
 
-.pdp-box-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.pdp-box-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.pdp-box-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
-.pdp-box-list li {
+.pdp-box-photo {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #F5F5F5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pdp-box-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pdp-box-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #C0C7D0;
+}
+
+.pdp-box-label {
+  font-family: var(--font-display, 'Sora', sans-serif);
   font-size: 13px;
+  font-weight: 600;
   color: #0A1628;
-  padding-left: 18px;
-  position: relative;
+  text-align: center;
+  margin: 0;
+  line-height: 1.3;
 }
 
-.pdp-box-list li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #2DD4FF;
-  font-weight: 700;
+.pdp-box-admin-note {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: #FFF8E1;
+  border-radius: 10px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  color: #92740E;
+  letter-spacing: 0.02em;
+  text-align: center;
 }
 
 /* ============ RELATED PRODUCTS ============ */
