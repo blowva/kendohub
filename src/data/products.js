@@ -501,17 +501,20 @@ export const products = [
     isNew: false,
   },
 ];
+
 // ============ DERIVED EXPORTS ============
 // These are used by Home.jsx and other pages
 
 export const hotProducts = products.filter(p => p.isHot);
 export const newProducts = products.filter(p => p.isNew);
 
+// Categories use id + name format (matching what Home.jsx expects)
+// Each category also includes a count of products in that category
 export const categories = [
-  { slug: 'all', label: 'All' },
-  { slug: 'projectors', label: 'Projectors' },
-  { slug: 'screens', label: 'Screens' },
-  { slug: 'audio', label: 'Audio' },
-  { slug: 'gadgets', label: 'Gadgets' },
-  { slug: 'accessories', label: 'Accessories' },
+  { id: 'all', name: 'All', count: products.length },
+  { id: 'projectors', name: 'Projectors', count: products.filter(p => p.category === 'projectors').length },
+  { id: 'screens', name: 'Screens', count: products.filter(p => p.category === 'screens').length },
+  { id: 'audio', name: 'Audio', count: products.filter(p => p.category === 'audio').length },
+  { id: 'gadgets', name: 'Gadgets', count: products.filter(p => p.category === 'gadgets').length },
+  { id: 'accessories', name: 'Accessories', count: products.filter(p => p.category === 'accessories').length },
 ];
