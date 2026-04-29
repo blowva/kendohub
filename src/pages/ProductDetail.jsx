@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store, ChevronDown, ChevronRight, Play, Image as ImageIcon } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store, ChevronRight, Play, Image as ImageIcon } from 'lucide-react'
 import { products } from '../data/products'
 import { useCart } from '../context/CartContext'
 import ProductVisual from '../components/ProductVisual'
@@ -14,7 +14,6 @@ export default function ProductDetail() {
 
   const [activeImage, setActiveImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
-  const [openSection, setOpenSection] = useState(null)
   const [wishlisted, setWishlisted] = useState(false)
 
   if (!product) {
@@ -32,7 +31,7 @@ export default function ProductDetail() {
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0
 
-  // Normalize box items: support both new (boxItems with photos) and old (boxContents string array) formats
+  // Normalize box items: support new (boxItems with photos) and old (boxContents string array) formats
   let boxItems = []
   if (product.boxItems && product.boxItems.length > 0) {
     boxItems = product.boxItems
@@ -49,10 +48,6 @@ export default function ProductDetail() {
   const relatedProducts = products
     .filter(p => p.id !== product.id && p.category === product.category)
     .slice(0, 6)
-
-  const toggleSection = (name) => {
-    setOpenSection(openSection === name ? null : name)
-  }
 
   const handleAddToCart = () => {
     addToCart(product, 1)
@@ -156,13 +151,13 @@ export default function ProductDetail() {
         {/* SHORT TAGLINE */}
         <p className="pdp-tagline">{product.tagline || product.description}</p>
 
-        {/* DESCRIPTION (always expanded, no toggle) */}
+        {/* DESCRIPTION (always expanded) */}
         <div className="pdp-static-section">
           <h2 className="pdp-static-title">Description</h2>
           <p className="pdp-static-body">{product.description}</p>
         </div>
 
-        {/* SPECIFICATIONS (always expanded, no toggle) */}
+        {/* SPECIFICATIONS (always expanded) */}
         <div className="pdp-static-section">
           <h2 className="pdp-static-title">Specifications</h2>
           {product.specs && Object.keys(product.specs).length > 0 ? (
@@ -179,55 +174,38 @@ export default function ProductDetail() {
           )}
         </div>
 
-        {/* COLLAPSIBLE SECTIONS */}
-        <div className="pdp-sections">
-          <button
-            className={`pdp-section ${openSection === 'video' ? 'is-open' : ''}`}
-            onClick={() => toggleSection('video')}
-          >
-            <span>Video</span>
-            <ChevronDown size={18} className="pdp-section-icon" />
-          </button>
-          {openSection === 'video' && (
-            <div className="pdp-section-body">
-              <div className="pdp-video-placeholder">
-                <Play size={32} fill="#FFFFFF" stroke="none" />
-                <p className="pdp-video-text">Product video coming soon</p>
-                <p className="pdp-video-hint">YouTube embed will appear here</p>
-              </div>
-            </div>
-          )}
+        {/* VIDEO (always expanded) */}
+        <div className="pdp-static-section">
+          <h2 className="pdp-static-title">Video</h2>
+          <div className="pdp-video-placeholder">
+            <Play size={32} fill="#FFFFFF" stroke="none" />
+            <p className="pdp-video-text">Product video coming soon</p>
+            <p className="pdp-video-hint">YouTube embed will appear here</p>
+          </div>
+        </div>
 
-          <button
-            className={`pdp-section ${openSection === 'box' ? 'is-open' : ''}`}
-            onClick={() => toggleSection('box')}
-          >
-            <span>What's in the box</span>
-            <ChevronDown size={18} className="pdp-section-icon" />
-          </button>
-          {openSection === 'box' && (
-            <div className="pdp-section-body">
-              <div className="pdp-box-grid">
-                {boxItems.map((item, i) => (
-                  <div key={i} className="pdp-box-item">
-                    <div className="pdp-box-photo">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} />
-                      ) : (
-                        <div className="pdp-box-photo-placeholder">
-                          <ImageIcon size={28} strokeWidth={1.5} />
-                        </div>
-                      )}
+        {/* WHAT'S IN THE BOX (always expanded) */}
+        <div className="pdp-static-section">
+          <h2 className="pdp-static-title">What's in the box</h2>
+          <div className="pdp-box-grid">
+            {boxItems.map((item, i) => (
+              <div key={i} className="pdp-box-item">
+                <div className="pdp-box-photo">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} />
+                  ) : (
+                    <div className="pdp-box-photo-placeholder">
+                      <ImageIcon size={28} strokeWidth={1.5} />
                     </div>
-                    <p className="pdp-box-label">{item.name}</p>
-                  </div>
-                ))}
+                  )}
+                </div>
+                <p className="pdp-box-label">{item.name}</p>
               </div>
-              <p className="pdp-box-admin-note">
-                ⚙️ Admin: photos can be added per item from the admin panel
-              </p>
-            </div>
-          )}
+            ))}
+          </div>
+          <p className="pdp-box-admin-note">
+            ⚙️ Admin: photos can be added per item from the admin panel
+          </p>
         </div>
 
         {/* RELATED PRODUCTS */}
