@@ -267,89 +267,46 @@
   margin: 0 0 32px;
 }
 
-/* ============ STATIC SECTIONS (always expanded) ============ */
+/* ============ UNIFIED SECTION CARDS (Description, Specifications, Video, What's in the box) ============
+   - Full-bleed (edge-to-edge), no rounded corners
+   - Silver background (#C0C7D0)
+   - Big bold titles (26-28px)
+   - Always expanded — no toggles
+============ */
 
 .pdp-static-section {
-  margin-bottom: 32px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid #EEF2F6;
+  background: #C0C7D0;
+  margin: 0 -18px 16px;
+  padding: 28px 18px;
+  border-radius: 0;
 }
 
 .pdp-static-section:last-of-type {
-  border-bottom: none;
+  margin-bottom: 32px;
 }
 
 .pdp-static-title {
   font-family: var(--font-display, 'Sora', sans-serif);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
   color: #0A1628;
-  margin: 0 0 12px;
-  letter-spacing: -0.01em;
+  margin: 0 0 18px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .pdp-static-body {
-  font-size: 14px;
-  color: #6B7A90;
+  font-size: 15px;
+  color: #11223D;
   line-height: 1.65;
-  margin: 0;
-}
-
-/* ============ COLLAPSIBLE SECTIONS ============ */
-
-.pdp-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 32px;
-}
-
-.pdp-section {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 18px;
-  background: #F5F7FA;
-  border: none;
-  border-radius: 12px;
-  font-family: var(--font-display, 'Sora', sans-serif);
-  font-size: 14px;
-  font-weight: 600;
-  color: #0A1628;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  text-align: left;
-}
-
-.pdp-section:hover {
-  background: #E8EEF5;
-}
-
-.pdp-section-icon {
-  color: #6B7A90;
-  transition: transform 0.2s ease;
-}
-
-.pdp-section.is-open .pdp-section-icon {
-  transform: rotate(180deg);
-}
-
-.pdp-section-body {
-  padding: 4px 18px 16px;
-  font-size: 14px;
-  color: #6B7A90;
-  line-height: 1.6;
-}
-
-.pdp-section-body p {
   margin: 0;
 }
 
 .pdp-empty {
   font-style: italic;
   font-size: 13px;
-  color: #9CA3AF;
+  color: #11223D;
+  opacity: 0.6;
 }
 
 /* ============ VIDEO PLACEHOLDER ============ */
@@ -406,9 +363,9 @@
 .pdp-specs-list li {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px dashed #E3E8EF;
-  font-size: 13px;
+  padding: 12px 0;
+  border-bottom: 1px dashed rgba(10, 22, 40, 0.18);
+  font-size: 14px;
   gap: 12px;
 }
 
@@ -417,13 +374,14 @@
 }
 
 .pdp-spec-key {
-  color: #6B7A90;
+  color: #11223D;
   text-transform: capitalize;
+  font-weight: 500;
 }
 
 .pdp-spec-val {
   color: #0A1628;
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
 }
 
@@ -432,7 +390,7 @@
 .pdp-box-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
   margin-top: 8px;
 }
 
@@ -445,7 +403,7 @@
 .pdp-box-photo {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #F5F5F5;
+  background: #FFFFFF;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -465,7 +423,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  color: #C0C7D0;
+  color: #6B7A90;
 }
 
 .pdp-box-label {
@@ -481,11 +439,11 @@
 .pdp-box-admin-note {
   margin: 16px 0 0;
   padding: 12px 14px;
-  background: #FFF8E1;
+  background: rgba(255, 255, 255, 0.55);
   border-radius: 10px;
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 11px;
-  color: #92740E;
+  color: #11223D;
   letter-spacing: 0.02em;
   text-align: center;
 }
@@ -506,10 +464,11 @@
 
 .pdp-related-title {
   font-family: var(--font-display, 'Sora', sans-serif);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   color: #0A1628;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .pdp-related-link {
@@ -628,6 +587,15 @@
 
   .pdp-image-main {
     max-width: 400px;
+  }
+
+  .pdp-static-title {
+    font-size: 30px;
+  }
+
+  .pdp-static-section {
+    padding: 36px 28px;
+    margin: 0 -28px 20px;
   }
 
   .pdp-related-card {
