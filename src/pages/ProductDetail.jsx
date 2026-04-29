@@ -1,10 +1,16 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store, ChevronRight, Play, Image as ImageIcon } from 'lucide-react'
+import {
+  ArrowLeft, ShoppingBag, Heart, Star, Package, Truck, Store,
+  ChevronRight, Play, Image as ImageIcon, Minus, Plus,
+  Flame, ShieldCheck, RotateCcw, Award, Share2, GitCompare
+} from 'lucide-react'
 import { products } from '../data/products'
 import { useCart } from '../context/CartContext'
 import ProductVisual from '../components/ProductVisual'
 import ProductCard from '../components/ProductCard'
+import LocationPicker from '../components/LocationPicker'
+import { formatNaira } from '../utils/format'
 import './ProductDetail.css'
 
 export default function ProductDetail() {
@@ -14,7 +20,10 @@ export default function ProductDetail() {
 
   const [activeImage, setActiveImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const [quantity, setQuantity] = useState(1)
   const [wishlisted, setWishlisted] = useState(false)
+  const [compared, setCompared] = useState(false)
+  const [shareToast, setShareToast] = useState(false)
 
   if (!product) {
     return (
@@ -31,7 +40,7 @@ export default function ProductDetail() {
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0
 
-  // Normalize box items: support new (boxItems with photos) and old (boxContents string array) formats
+  // Box items normalization
   let boxItems = []
   if (product.boxItems && product.boxItems.length > 0) {
     boxItems = product.boxItems
@@ -49,8 +58,40 @@ export default function ProductDetail() {
     .filter(p => p.id !== product.id && p.category === product.category)
     .slice(0, 6)
 
+  // Stock urgency
+  const stockLow = product.stock > 0 && product.stock <= 10
+
+  // Bulk discount tiers
+  const bulkTiers = [
+    { qty: 2, percent: 5 },
+    { qty: 3, percent: 10 },
+    { qty: 5, percent: 15 },
+  ]
+  const activeBulkTier = [...bulkTiers].reverse().find(t => quantity >= t.qty)
+  const baseTotal = product.price * quantity
+  const bulkSavings = activeBulkTier ? (baseTotal * activeBulkTier.percent / 100) : 0
+  const finalTotal = baseTotal - bulkSavings
+
+  const handleQtyDecrease = () => {
+    if (quantity > 1) setQuantity(quantity - 1)
+  }
+  const handleQtyIncrease = () => {
+    if (quantity < (product.stock || 99)) setQuantity(quantity + 1)
+  }
   const handleAddToCart = () => {
-    addToCart(product, 1)
+    addToCart(product, quantity)
+  }
+  const handleShare = async () => {
+    const url = window.location.href
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: product.name, text: product.tagline, url })
+      } catch (e) { /* cancelled */ }
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(url)
+      setShareToast(true)
+      setTimeout(() => setShareToast(false), 2000)
+    }
   }
 
   return (
@@ -101,10 +142,10 @@ export default function ProductDetail() {
         </div>
 
         <div className="pdp-price-row">
-          <span className="pdp-price">${product.price.toFixed(2)} USD</span>
+          <span className="pdp-price">{formatNaira(product.price)}</span>
           {hasDiscount && (
             <>
-              <span className="pdp-old-price">${product.oldPrice.toFixed(2)} USD</span>
+              <span className="pdp-old-price">{formatNaira(product.oldPrice)}</span>
               <span className="pdp-discount">-{discountPercent}%</span>
             </>
           )}
@@ -130,7 +171,88 @@ export default function ProductDetail() {
           </div>
         )}
 
-        {/* INFO ICONS */}
+        {/* WISHLIST · SHARE · COMPARE row */}
+        <div className="pdp-action-row">
+          <button
+            className={`pdp-action-btn ${wishlisted ? 'is-active' : ''}`}
+            onClick={() => setWishlisted(!wishlisted)}
+          >
+            <Heart size={16} fill={wishlisted ? '#FF3B5C' : 'none'} stroke={wishlisted ? '#FF3B5C' : '#0A1628'} />
+            <span>{wishlisted ? 'Saved' : 'Wishlist'}</span>
+          </button>
+          <button className="pdp-action-btn" onClick={handleShare}>
+            <Share2 size={16} />
+            <span>Share</span>
+          </button>
+          <button
+            className={`pdp-action-btn ${compared ? 'is-active' : ''}`}
+            onClick={() => setCompared(!compared)}
+          >
+            <GitCompare size={16} />
+            <span>{compared ? 'Added' : 'Compare'}</span>
+          </button>
+        </div>
+        {shareToast && (
+          <div className="pdp-toast">Link copied to clipboard ✓</div>
+        )}
+
+        {/* QUANTITY SELECTOR */}
+        <div className="pdp-qty-row">
+          <span className="pdp-qty-label">Quantity</span>
+          <div className="pdp-qty-control">
+            <button
+              className="pdp-qty-btn"
+              onClick={handleQtyDecrease}
+              disabled={quantity <= 1}
+              aria-label="Decrease quantity"
+            >
+              <Minus size={16} />
+            </button>
+            <span className="pdp-qty-num">{quantity}</span>
+            <button
+              className="pdp-qty-btn"
+              onClick={handleQtyIncrease}
+              disabled={quantity >= (product.stock || 99)}
+              aria-label="Increase quantity"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* STOCK URGENCY */}
+        {stockLow && (
+          <div className="pdp-urgency">
+            <Flame size={16} className="pdp-urgency-icon" />
+            <span>Only <strong>{product.stock} left</strong> in stock — order soon</span>
+          </div>
+        )}
+
+        {/* DELIVERY ESTIMATE BY STATE (auto-IP + manual override) */}
+        <LocationPicker cartSubtotal={finalTotal} />
+
+        {/* BULK DISCOUNT TIERS */}
+        <div className="pdp-bulk">
+          <p className="pdp-bulk-title">Save more when you buy more</p>
+          <div className="pdp-bulk-tiers">
+            {bulkTiers.map((tier) => {
+              const active = quantity >= tier.qty
+              return (
+                <div key={tier.qty} className={`pdp-bulk-tier ${active ? 'is-active' : ''}`}>
+                  <span className="pdp-bulk-qty">Buy {tier.qty}+</span>
+                  <span className="pdp-bulk-save">Save {tier.percent}%</span>
+                </div>
+              )
+            })}
+          </div>
+          {activeBulkTier && (
+            <p className="pdp-bulk-savings-now">
+              You save <strong>{formatNaira(bulkSavings)}</strong> · Total: <strong>{formatNaira(finalTotal)}</strong>
+            </p>
+          )}
+        </div>
+
+        {/* META LIST */}
         <div className="pdp-meta-list">
           <div className="pdp-meta-item">
             <Package size={16} className="pdp-meta-icon" />
@@ -140,7 +262,7 @@ export default function ProductDetail() {
           </div>
           <div className="pdp-meta-item">
             <Truck size={16} className="pdp-meta-icon" />
-            <span>Free delivery</span>
+            <span>Free delivery on orders over {formatNaira(100000)}</span>
           </div>
           <div className="pdp-meta-item">
             <Store size={16} className="pdp-meta-icon" />
@@ -148,16 +270,32 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* SHORT TAGLINE */}
+        {/* TRUST BADGES */}
+        <div className="pdp-trust">
+          <div className="pdp-trust-item">
+            <ShieldCheck size={20} className="pdp-trust-icon" />
+            <span className="pdp-trust-text">Secure<br/>checkout</span>
+          </div>
+          <div className="pdp-trust-item">
+            <RotateCcw size={20} className="pdp-trust-icon" />
+            <span className="pdp-trust-text">30-day<br/>returns</span>
+          </div>
+          <div className="pdp-trust-item">
+            <Award size={20} className="pdp-trust-icon" />
+            <span className="pdp-trust-text">1-year<br/>warranty</span>
+          </div>
+        </div>
+
+        {/* TAGLINE */}
         <p className="pdp-tagline">{product.tagline || product.description}</p>
 
-        {/* DESCRIPTION (always expanded) */}
+        {/* DESCRIPTION */}
         <div className="pdp-static-section">
           <h2 className="pdp-static-title">Description</h2>
           <p className="pdp-static-body">{product.description}</p>
         </div>
 
-        {/* SPECIFICATIONS (always expanded) */}
+        {/* SPECIFICATIONS */}
         <div className="pdp-static-section">
           <h2 className="pdp-static-title">Specifications</h2>
           {product.specs && Object.keys(product.specs).length > 0 ? (
@@ -174,7 +312,7 @@ export default function ProductDetail() {
           )}
         </div>
 
-        {/* VIDEO (always expanded) */}
+        {/* VIDEO */}
         <div className="pdp-static-section">
           <h2 className="pdp-static-title">Video</h2>
           <div className="pdp-video-placeholder">
@@ -184,7 +322,7 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* WHAT'S IN THE BOX (always expanded) */}
+        {/* WHAT'S IN THE BOX */}
         <div className="pdp-static-section">
           <h2 className="pdp-static-title">What's in the box</h2>
           <div className="pdp-box-grid">
@@ -203,9 +341,6 @@ export default function ProductDetail() {
               </div>
             ))}
           </div>
-          <p className="pdp-box-admin-note">
-            ⚙️ Admin: photos can be added per item from the admin panel
-          </p>
         </div>
 
         {/* RELATED PRODUCTS */}
@@ -238,7 +373,7 @@ export default function ProductDetail() {
           <Heart size={20} fill={wishlisted ? '#FF3B5C' : 'none'} stroke={wishlisted ? '#FF3B5C' : '#0A1628'} />
         </button>
         <button className="pdp-add-btn" onClick={handleAddToCart}>
-          Add to Cart
+          Add to Cart {quantity > 1 && `· ${quantity}`}
         </button>
       </div>
     </div>
