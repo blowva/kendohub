@@ -1,0 +1,284 @@
+/* ============ LOCATION PICKER (delivery state selector) ============ */
+
+.locpick-block {
+  background: #F5F7FA;
+  border: 1px solid #E3E8EF;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 0 0 24px;
+}
+
+.locpick-block.is-compact {
+  padding: 10px 12px;
+}
+
+.locpick-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6B7A90;
+  background: #F5F7FA;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 0 0 24px;
+}
+
+.locpick-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  background: transparent;
+  color: #0A1628;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.locpick-icon {
+  flex-shrink: 0;
+  color: #2DD4FF;
+}
+
+.locpick-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.locpick-label strong {
+  font-weight: 700;
+}
+
+.locpick-chev {
+  flex-shrink: 0;
+  color: #6B7A90;
+  transition: transform 0.2s ease;
+}
+
+.locpick-prompt {
+  font-size: 12px;
+  color: #6B7A90;
+  margin: 6px 0 0 24px;
+  font-style: italic;
+}
+
+.locpick-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #E3E8EF;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.locpick-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #0A1628;
+}
+
+.locpick-detail-icon {
+  color: #6B7A90;
+  flex-shrink: 0;
+}
+
+.locpick-detail-row strong {
+  font-weight: 700;
+}
+
+.locpick-fee-label {
+  color: #6B7A90;
+  margin-left: auto;
+}
+
+.locpick-detail-row:last-of-type {
+  justify-content: space-between;
+}
+
+.locpick-fee-free {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-weight: 700;
+  color: #16A34A;
+  background: #DCFCE7;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.locpick-hint {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #6B7A90;
+  font-style: italic;
+}
+
+/* ============ BOTTOM SHEET ============ */
+
+.locpick-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: locpickFadeIn 0.2s ease;
+}
+
+@keyframes locpickFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.locpick-sheet {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: locpickSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes locpickSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.locpick-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #C0C7D0;
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+
+.locpick-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 12px;
+}
+
+.locpick-sheet-title {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: #0A1628;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.locpick-sheet-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F5F7FA;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0A1628;
+  transition: background 0.2s ease;
+}
+
+.locpick-sheet-close:hover {
+  background: #E8EEF5;
+}
+
+/* Search input */
+.locpick-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 20px 12px;
+  padding: 0 14px;
+  background: #F5F7FA;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.locpick-search:focus-within {
+  border-color: #2DD4FF;
+}
+
+.locpick-search-icon {
+  color: #6B7A90;
+  flex-shrink: 0;
+}
+
+.locpick-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 14px;
+  color: #0A1628;
+  outline: none;
+  font-family: inherit;
+}
+
+.locpick-search-input::placeholder {
+  color: #6B7A90;
+}
+
+/* State list */
+.locpick-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.locpick-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px 14px;
+  border: none;
+  background: transparent;
+  border-bottom: 1px solid #EEF2F6;
+  font-size: 15px;
+  color: #0A1628;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.locpick-item:hover {
+  background: #F5F7FA;
+}
+
+.locpick-item.is-active {
+  background: #E0F7FF;
+  font-weight: 700;
+}
+
+.locpick-item-name {
+  flex: 1;
+}
+
+.locpick-item-check {
+  color: #2DD4FF;
+  flex-shrink: 0;
+}
+
+.locpick-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6B7A90;
+  font-style: italic;
+  font-size: 14px;
+}
