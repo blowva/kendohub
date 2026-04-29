@@ -84,7 +84,7 @@ export default function Home() {
                   onClick={() => setSelectedCat(c.id)}
                 >
                   <Icon size={18} strokeWidth={1.5} />
-                  <span className="cat-chip-name">{c.name.toUpperCase()}</span>
+                  <span className="cat-chip-name">{(c.name || '').toUpperCase()}</span>
                   <span className="cat-chip-count">{c.count} products</span>
                 </button>
               );
@@ -113,6 +113,12 @@ export default function Home() {
 
 function ArrivalCard({ product, color }) {
   const light = isLightColor(color);
+
+  // Handle product.id whether it is a string ('p1') or a number (1)
+  const seedValue = typeof product.id === 'string'
+    ? parseInt(product.id.replace(/\D/g, ''), 10) || 0
+    : (product.id || 0);
+
   return (
     <Link
       to={`/product/${product.slug}`}
@@ -126,7 +132,7 @@ function ArrivalCard({ product, color }) {
       <div className="arrival-visual">
         <ProductVisual
           category={product.category}
-          seed={parseInt(product.id.replace('p', ''), 10)}
+          seed={seedValue}
         />
       </div>
       <div className={`arrival-info ${light ? 'on-light' : 'on-dark'}`}>
