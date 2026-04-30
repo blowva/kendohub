@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Heart, Star } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import ProductVisual from './ProductVisual'
+import { formatNaira } from '../utils/format'
 import './ProductCard.css'
 
 export default function ProductCard({ product, variant = 'default' }) {
@@ -17,7 +18,7 @@ export default function ProductCard({ product, variant = 'default' }) {
     e.preventDefault()
     e.stopPropagation()
     addToCart(product, 1)
-    window.location.href = '/checkout'
+    window.location.href = '/cart'
   }
 
   const showCategoryTag = variant === 'hot-new'
@@ -41,9 +42,13 @@ export default function ProductCard({ product, variant = 'default' }) {
           <ProductVisual product={product} />
         </div>
       </div>
-
       <div className="pc-body">
         <h3 className="pc-name">{product.name}</h3>
+
+        {/* NEW: tagline appears below name */}
+        {product.tagline && (
+          <p className="pc-tagline">{product.tagline}</p>
+        )}
 
         <div className="pc-meta">
           <span className="pc-rating">
@@ -51,9 +56,9 @@ export default function ProductCard({ product, variant = 'default' }) {
             <span className="pc-rating-num">{product.rating}</span>
             <span className="pc-reviews">({product.reviewCount})</span>
           </span>
-          <span className="pc-price">${product.price}</span>
+          {/* CHANGED: $ → ₦ via formatNaira helper */}
+          <span className="pc-price">{formatNaira(product.price)}</span>
         </div>
-
         <div className="pc-actions">
           <button className="pc-btn pc-btn-add" onClick={handleAddToCart}>
             Add to Cart
