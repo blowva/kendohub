@@ -665,3 +665,165 @@
     padding-bottom: 40px;
   }
 }
+/* ==========================================================
+   INLINE LOCATION PICKER — append to Cart.css
+   ========================================================== */
+
+/* Convert "Change" link styling so it works as a <button> */
+button.cartv2-delivery-change {
+  font-family: inherit;
+  cursor: pointer;
+  background: #fff;
+  border: 1.5px solid rgba(10, 22, 40, 0.1);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0a8bb8;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+button.cartv2-delivery-change:hover {
+  background: #f0fbff;
+  border-color: #2DD4FF;
+}
+button.cartv2-delivery-change:active {
+  transform: scale(0.97);
+}
+
+/* Empty-state prompt as a button */
+.cartv2-delivery-prompt-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0A1628;
+  cursor: pointer;
+  text-align: left;
+  padding: 4px 0;
+}
+.cartv2-delivery-prompt-btn:hover {
+  opacity: 0.8;
+}
+
+/* Animated picker container */
+.cartv2-picker {
+  overflow: hidden;
+}
+
+.cartv2-picker-inner {
+  padding: 16px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  border-top: 1px dashed rgba(10, 22, 40, 0.12);
+}
+
+.cartv2-picker-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cartv2-picker-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5a6678;
+}
+
+.cartv2-picker-select-wrap {
+  position: relative;
+}
+
+.cartv2-picker-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff;
+  border: 1.5px solid rgba(10, 22, 40, 0.1);
+  border-radius: 12px;
+  padding: 13px 40px 13px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0A1628;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cartv2-picker-select:focus {
+  outline: none;
+  border-color: #2DD4FF;
+  box-shadow: 0 0 0 3px rgba(45, 212, 255, 0.18);
+}
+
+.cartv2-picker-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f7fa;
+}
+
+.cartv2-picker-chev {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #5a6678;
+}
+
+.cartv2-picker-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.cartv2-picker-cancel,
+.cartv2-picker-save {
+  flex: 1;
+  height: 46px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.cartv2-picker-cancel {
+  background: transparent;
+  border: 1.5px solid rgba(10, 22, 40, 0.12);
+  color: #0A1628;
+}
+.cartv2-picker-cancel:hover {
+  background: rgba(10, 22, 40, 0.04);
+}
+
+.cartv2-picker-save {
+  background: #2DD4FF;
+  border: 1.5px solid #2DD4FF;
+  color: #0A1628;
+}
+.cartv2-picker-save:hover:not(:disabled) {
+  background: #1cc4ee;
+  border-color: #1cc4ee;
+}
+.cartv2-picker-save:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.cartv2-picker-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
