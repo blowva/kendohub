@@ -1,44 +1,59 @@
 // src/components/LocationPicker.jsx
-// Renders the "Deliver to: Lagos ▾" pill.
-// Tapping it opens a bottom sheet with all 36 states + FCT.
+// Two-step location picker: state dropdown + city dropdown.
+// City list updates based on selected state.
 
 import { useState, useEffect } from 'react'
-import { MapPin, ChevronDown, X, Check, Search, Truck } from 'lucide-react'
+import { MapPin, ChevronDown, X, Check, Search, Truck, Building } from 'lucide-react'
 import { useLocation } from '../context/LocationContext'
 import {
   stateList,
   getDeliveryDateRange,
   getDeliveryFee,
 } from '../data/deliveryZones'
+import { getCitiesForState } from '../data/nigerianCities'
 import { formatNaira } from '../utils/format'
 import './LocationPicker.css'
 
 export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
-  const { selectedState, setSelectedState, isDetecting, detectionSource } = useLocation()
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
+  const {
+    selectedState, selectedCity,
+    setSelectedState, setSelectedCity,
+    isDetecting, detectionSource
+  } = useLocation()
 
-  // Lock body scroll when sheet is open
+  const [stateSheetOpen, setStateSheetOpen] = useState(false)
+  const [citySheetOpen, setCitySheetOpen] = useState(false)
+  const [stateSearch, setStateSearch] = useState('')
+  const [citySearch, setCitySearch] = useState('')
+
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    const open = stateSheetOpen || citySheetOpen
+    document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [open])
+  }, [stateSheetOpen, citySheetOpen])
 
-  const filtered = search
-    ? stateList.filter(s => s.toLowerCase().includes(search.toLowerCase()))
+  const cities = selectedState ? getCitiesForState(selectedState) : []
+  const filteredStates = stateSearch
+    ? stateList.filter(s => s.toLowerCase().includes(stateSearch.toLowerCase()))
     : stateList
+  const filteredCities = citySearch
+    ? cities.filter(c => c.toLowerCase().includes(citySearch.toLowerCase()))
+    : cities
 
-  const handlePick = (s) => {
+  const handleStatePick = (s) => {
     setSelectedState(s, 'manual')
-    setOpen(false)
-    setSearch('')
+    setStateSheetOpen(false)
+    setStateSearch('')
+    // Auto-open city picker right after selecting state
+    setTimeout(() => setCitySheetOpen(true), 200)
   }
 
-  // Loading / first paint
+  const handleCityPick = (c) => {
+    setSelectedCity(c)
+    setCitySheetOpen(false)
+    setCitySearch('')
+  }
+
   if (isDetecting) {
     return (
       <div className="locpick locpick-loading">
@@ -53,13 +68,13 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
 
   return (
     <>
-      {/* PILL: shows current state + delivery info */}
       <div className={`locpick-block ${compact ? 'is-compact' : ''}`}>
-        <button className="locpick-pill" onClick={() => setOpen(true)}>
+        {/* STATE PILL */}
+        <button className="locpick-pill" onClick={() => setStateSheetOpen(true)}>
           <MapPin size={15} className="locpick-icon" />
           <span className="locpick-label">
             {selectedState ? (
-              <>Deliver to <strong>{selectedState}</strong></>
+              <>State: <strong>{selectedState}</strong></>
             ) : (
               <>Choose your state</>
             )}
@@ -67,13 +82,27 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
           <ChevronDown size={15} className="locpick-chev" />
         </button>
 
-        {selectedState && range && feeInfo && (
+        {/* CITY PILL — only show when state is selected */}
+        {selectedState && (
+          <button className="locpick-pill locpick-pill-city" onClick={() => setCitySheetOpen(true)}>
+            <Building size={15} className="locpick-icon" />
+            <span className="locpick-label">
+              {selectedCity ? (
+                <>City: <strong>{selectedCity}</strong></>
+              ) : (
+                <>Choose your city / area</>
+              )}
+            </span>
+            <ChevronDown size={15} className="locpick-chev" />
+          </button>
+        )}
+
+        {/* DELIVERY DETAILS - only show when state + city both selected */}
+        {selectedState && selectedCity && range && feeInfo && (
           <div className="locpick-details">
             <div className="locpick-detail-row">
               <Truck size={14} className="locpick-detail-icon" />
-              <span>
-                Get it by <strong>{range.label}</strong>
-              </span>
+              <span>Get it by <strong>{range.label}</strong></span>
             </div>
             <div className="locpick-detail-row">
               <span className="locpick-fee-label">Delivery fee:</span>
@@ -83,63 +112,110 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
                 <strong>{formatNaira(feeInfo.fee)}</strong>
               )}
             </div>
-            {detectionSource === 'ip' && (
-              <p className="locpick-hint">
-                Auto-detected — tap to change
-              </p>
+            {detectionSource === 'ip' && !selectedCity && (
+              <p className="locpick-hint">Auto-detected — tap to change</p>
             )}
           </div>
         )}
 
         {!selectedState && (
           <p className="locpick-prompt">
-            Pick your state to see delivery date and fee
+            Pick your state and city to see delivery date and fee
+          </p>
+        )}
+        {selectedState && !selectedCity && (
+          <p className="locpick-prompt">
+            Now pick your city in {selectedState}
           </p>
         )}
       </div>
 
-      {/* BOTTOM SHEET: 36 states */}
-      {open && (
-        <div className="locpick-overlay" onClick={() => setOpen(false)}>
+      {/* ============ STATE BOTTOM SHEET ============ */}
+      {stateSheetOpen && (
+        <div className="locpick-overlay" onClick={() => setStateSheetOpen(false)}>
           <div className="locpick-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="locpick-sheet-handle" />
             <div className="locpick-sheet-head">
               <h3 className="locpick-sheet-title">Choose your state</h3>
               <button
                 className="locpick-sheet-close"
-                onClick={() => setOpen(false)}
+                onClick={() => setStateSheetOpen(false)}
                 aria-label="Close"
               >
                 <X size={20} />
               </button>
             </div>
-
             <div className="locpick-search">
               <Search size={16} className="locpick-search-icon" />
               <input
                 type="text"
                 placeholder="Search state..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={stateSearch}
+                onChange={(e) => setStateSearch(e.target.value)}
                 className="locpick-search-input"
                 autoFocus
               />
             </div>
-
             <div className="locpick-list">
-              {filtered.length === 0 ? (
-                <p className="locpick-empty">No state matches "{search}"</p>
+              {filteredStates.length === 0 ? (
+                <p className="locpick-empty">No state matches "{stateSearch}"</p>
               ) : (
-                filtered.map(s => (
+                filteredStates.map(s => (
                   <button
                     key={s}
                     className={`locpick-item ${s === selectedState ? 'is-active' : ''}`}
-                    onClick={() => handlePick(s)}
+                    onClick={() => handleStatePick(s)}
                   >
                     <span className="locpick-item-name">{s}</span>
-                    {s === selectedState && (
-                      <Check size={18} className="locpick-item-check" />
-                    )}
+                    {s === selectedState && <Check size={18} className="locpick-item-check" />}
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============ CITY BOTTOM SHEET ============ */}
+      {citySheetOpen && (
+        <div className="locpick-overlay" onClick={() => setCitySheetOpen(false)}>
+          <div className="locpick-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="locpick-sheet-handle" />
+            <div className="locpick-sheet-head">
+              <h3 className="locpick-sheet-title">
+                Choose your city in {selectedState}
+              </h3>
+              <button
+                className="locpick-sheet-close"
+                onClick={() => setCitySheetOpen(false)}
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="locpick-search">
+              <Search size={16} className="locpick-search-icon" />
+              <input
+                type="text"
+                placeholder="Search city..."
+                value={citySearch}
+                onChange={(e) => setCitySearch(e.target.value)}
+                className="locpick-search-input"
+                autoFocus
+              />
+            </div>
+            <div className="locpick-list">
+              {filteredCities.length === 0 ? (
+                <p className="locpick-empty">No city matches "{citySearch}"</p>
+              ) : (
+                filteredCities.map(c => (
+                  <button
+                    key={c}
+                    className={`locpick-item ${c === selectedCity ? 'is-active' : ''}`}
+                    onClick={() => handleCityPick(c)}
+                  >
+                    <span className="locpick-item-name">{c}</span>
+                    {c === selectedCity && <Check size={18} className="locpick-item-check" />}
                   </button>
                 ))
               )}
