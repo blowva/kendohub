@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Minus, Plus, X, ArrowRight, ShoppingBag,
-  MapPin, Truck, Zap, ShieldCheck, RotateCcw, Award, CheckCircle2
+  MapPin, Truck, Zap, ShieldCheck, RotateCcw, Award, CheckCircle2,
+  ChevronDown, Check
 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useLocation } from '../context/LocationContext'
+import { nigerianStates } from '../data/nigerianCities'
 import { getDeliveryDateRange, getDeliveryFee } from '../data/deliveryZones'
 import ProductVisual from '../components/ProductVisual'
 import { formatNaira } from '../utils/format'
@@ -12,8 +16,41 @@ import './Cart.css'
 
 export default function Cart() {
   const { items, subtotal, freeThreshold, setQty, remove } = useCart()
-  const { selectedState, selectedCity } = useLocation()
+  const {
+    selectedState,
+    selectedCity,
+    setSelectedState,
+    setSelectedCity,
+  } = useLocation()
   const navigate = useNavigate()
+
+  // ---- inline location picker state ----
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [draftState, setDraftState] = useState(selectedState || '')
+  const [draftCity, setDraftCity] = useState(selectedCity || '')
+
+  const stateData = nigerianStates.find((s) => s.name === draftState)
+  const cityList = stateData?.cities || []
+
+  const openPicker = () => {
+    setDraftState(selectedState || '')
+    setDraftCity(selectedCity || '')
+    setPickerOpen(true)
+  }
+  const closePicker = () => setPickerOpen(false)
+
+  const handleStateChange = (e) => {
+    setDraftState(e.target.value)
+    setDraftCity('') // reset city when state changes
+  }
+
+  const handleSave = () => {
+    if (!draftState || !draftCity) return
+    setSelectedState(draftState)
+    setSelectedCity(draftCity)
+    setPickerOpen(false)
+  }
+  // --------------------------------------
 
   const feeInfo = (selectedState && selectedCity)
     ? getDeliveryFee(selectedState, selectedCity, subtotal)
@@ -62,6 +99,79 @@ export default function Cart() {
     )
   }
 
+  // ---- shared picker panel ----
+  const pickerPanel = (
+    <AnimatePresence initial={false}>
+      {pickerOpen && (
+        <motion.div
+          key="picker"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="cartv2-picker"
+        >
+          <div className="cartv2-picker-inner">
+            <label className="cartv2-picker-field">
+              <span className="cartv2-picker-label">State</span>
+              <div className="cartv2-picker-select-wrap">
+                <select
+                  value={draftState}
+                  onChange={handleStateChange}
+                  className="cartv2-picker-select"
+                >
+                  <option value="">Select state…</option>
+                  {nigerianStates.map((s) => (
+                    <option key={s.name} value={s.name}>{s.name}</option>
+                  ))}
+                </select>
+                <ChevronDown size={16} className="cartv2-picker-chev" />
+              </div>
+            </label>
+
+            <label className="cartv2-picker-field">
+              <span className="cartv2-picker-label">City</span>
+              <div className="cartv2-picker-select-wrap">
+                <select
+                  value={draftCity}
+                  onChange={(e) => setDraftCity(e.target.value)}
+                  disabled={!draftState}
+                  className="cartv2-picker-select"
+                >
+                  <option value="">
+                    {draftState ? 'Select city…' : 'Pick a state first'}
+                  </option>
+                  {cityList.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+                <ChevronDown size={16} className="cartv2-picker-chev" />
+              </div>
+            </label>
+
+            <div className="cartv2-picker-actions">
+              <button
+                type="button"
+                className="cartv2-picker-cancel"
+                onClick={closePicker}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="cartv2-picker-save"
+                onClick={handleSave}
+                disabled={!draftState || !draftCity}
+              >
+                <Check size={14} /> Save
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
   return (
     <div className="cartv2 page-enter">
       <div className="cartv2-container">
@@ -79,9 +189,16 @@ export default function Cart() {
                 <span className="cartv2-delivery-label">Delivering to</span>
                 <strong>{selectedCity}, {selectedState}</strong>
               </div>
-              <Link to="/shop" className="cartv2-delivery-change">Change</Link>
+              <button
+                type="button"
+                className="cartv2-delivery-change"
+                onClick={() => (pickerOpen ? closePicker() : openPicker())}
+                aria-expanded={pickerOpen}
+              >
+                {pickerOpen ? 'Close' : 'Change'}
+              </button>
             </div>
-            {deliveryRange && (
+            {deliveryRange && !pickerOpen && (
               <div className="cartv2-delivery-meta">
                 <Truck size={13} />
                 <span>Get it by <strong>{deliveryRange.label}</strong></span>
@@ -92,11 +209,28 @@ export default function Cart() {
                 )}
               </div>
             )}
+            {pickerPanel}
           </div>
         ) : (
-          <div className="cartv2-delivery cartv2-delivery-prompt">
-            <MapPin size={16} className="cartv2-delivery-icon" />
-            <span>Visit a product page to set your delivery location</span>
+          <div className="cartv2-delivery">
+            <button
+              type="button"
+              className="cartv2-delivery-prompt-btn"
+              onClick={() => (pickerOpen ? closePicker() : openPicker())}
+              aria-expanded={pickerOpen}
+            >
+              <MapPin size={16} className="cartv2-delivery-icon" />
+              <span>Set your delivery location</span>
+              <ChevronDown
+                size={16}
+                style={{
+                  marginLeft: 'auto',
+                  transform: pickerOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s ease',
+                }}
+              />
+            </button>
+            {pickerPanel}
           </div>
         )}
 
