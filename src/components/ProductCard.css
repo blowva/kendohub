@@ -269,3 +269,24 @@
     font-size: 12px;
   }
 }
+/* ============ APPEND THIS TO YOUR EXISTING ProductCard.css ============ */
+/* Do NOT replace the whole file. Just add this at the bottom. */
+
+.pc-tagline {
+  font-size: 11px;
+  color: #6B7A90;
+  line-height: 1.4;
+  margin: 4px 0 8px;
+  /* Truncate to 2 lines on phone so cards stay clean */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+  .pc-tagline {
+    font-size: 12px;
+  }
+}
