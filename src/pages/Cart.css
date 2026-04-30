@@ -197,3 +197,47 @@
   .cart-summary { position: static; }
   .cart-line { grid-template-columns: 100px 1fr; }
 }
+/* ============ APPEND THIS TO YOUR EXISTING Cart.css ============ */
+/* Do NOT replace the whole file. Just add this at the bottom. */
+
+.cart-delivery-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #ECFDFF 0%, #F0FAFF 100%);
+  border: 1px solid #BAE6FD;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: #0A1628;
+}
+
+.cart-delivery-banner svg {
+  color: #0EA5E9;
+  flex-shrink: 0;
+}
+
+.cart-delivery-banner span {
+  flex: 1;
+}
+
+.cart-delivery-banner strong {
+  font-weight: 700;
+}
+
+.cart-delivery-change {
+  font-size: 12px;
+  color: #0EA5E9;
+  text-decoration: none;
+  font-weight: 600;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  transition: background 0.15s ease;
+}
+
+.cart-delivery-change:hover {
+  background: #E0F2FE;
+}
