@@ -1,4 +1,4 @@
-/* ============ LOCATION PICKER (delivery state selector) ============ */
+/* ============ LOCATION PICKER (state + city) ============ */
 
 .locpick-block {
   background: #F5F7FA;
@@ -29,14 +29,24 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 6px 0;
-  border: none;
-  background: transparent;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  background: #FFFFFF;
   color: #0A1628;
   font-size: 14px;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
+}
+
+.locpick-pill:hover {
+  border-color: #C0C7D0;
+}
+
+.locpick-pill-city {
+  margin-top: 8px;
 }
 
 .locpick-icon {
@@ -56,19 +66,19 @@
 .locpick-chev {
   flex-shrink: 0;
   color: #6B7A90;
-  transition: transform 0.2s ease;
 }
 
 .locpick-prompt {
   font-size: 12px;
   color: #6B7A90;
-  margin: 6px 0 0 24px;
+  margin: 8px 0 0;
   font-style: italic;
+  text-align: center;
 }
 
 .locpick-details {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px dashed #E3E8EF;
   display: flex;
   flex-direction: column;
@@ -120,7 +130,6 @@
 }
 
 /* ============ BOTTOM SHEET ============ */
-
 .locpick-overlay {
   position: fixed;
   inset: 0;
@@ -166,6 +175,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px 12px;
+  gap: 12px;
 }
 
 .locpick-sheet-title {
@@ -175,6 +185,7 @@
   color: #0A1628;
   margin: 0;
   letter-spacing: -0.01em;
+  flex: 1;
 }
 
 .locpick-sheet-close {
@@ -188,14 +199,9 @@
   justify-content: center;
   cursor: pointer;
   color: #0A1628;
-  transition: background 0.2s ease;
+  flex-shrink: 0;
 }
 
-.locpick-sheet-close:hover {
-  background: #E8EEF5;
-}
-
-/* Search input */
 .locpick-search {
   display: flex;
   align-items: center;
@@ -205,7 +211,6 @@
   background: #F5F7FA;
   border-radius: 12px;
   border: 1px solid transparent;
-  transition: border-color 0.2s ease;
 }
 
 .locpick-search:focus-within {
@@ -232,7 +237,6 @@
   color: #6B7A90;
 }
 
-/* State list */
 .locpick-list {
   flex: 1;
   overflow-y: auto;
@@ -254,7 +258,6 @@
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: background 0.15s ease;
 }
 
 .locpick-item:hover {
