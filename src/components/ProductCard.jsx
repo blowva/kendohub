@@ -45,7 +45,7 @@ export default function ProductCard({ product, variant = 'default' }) {
       <div className="pc-body">
         <h3 className="pc-name">{product.name}</h3>
 
-        {/* NEW: tagline appears below name */}
+        {/* NEW: tagline below name */}
         {product.tagline && (
           <p className="pc-tagline">{product.tagline}</p>
         )}
@@ -56,7 +56,7 @@ export default function ProductCard({ product, variant = 'default' }) {
             <span className="pc-rating-num">{product.rating}</span>
             <span className="pc-reviews">({product.reviewCount})</span>
           </span>
-          {/* CHANGED: $ → ₦ via formatNaira helper */}
+          {/* CHANGED: $ → ₦ */}
           <span className="pc-price">{formatNaira(product.price)}</span>
         </div>
         <div className="pc-actions">
