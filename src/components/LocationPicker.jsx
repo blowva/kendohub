@@ -1,9 +1,9 @@
 // src/components/LocationPicker.jsx
 // Two-step location picker: state dropdown + city dropdown.
-// City list updates based on selected state.
+// Now passes city to delivery zone for city-level overrides (Benin City fast lane).
 
 import { useState, useEffect } from 'react'
-import { MapPin, ChevronDown, X, Check, Search, Truck, Building } from 'lucide-react'
+import { MapPin, ChevronDown, X, Check, Search, Truck, Building, Zap } from 'lucide-react'
 import { useLocation } from '../context/LocationContext'
 import {
   stateList,
@@ -44,7 +44,6 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
     setSelectedState(s, 'manual')
     setStateSheetOpen(false)
     setStateSearch('')
-    // Auto-open city picker right after selecting state
     setTimeout(() => setCitySheetOpen(true), 200)
   }
 
@@ -63,8 +62,9 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
     )
   }
 
-  const range = selectedState ? getDeliveryDateRange(selectedState) : null
-  const feeInfo = selectedState ? getDeliveryFee(selectedState, cartSubtotal) : null
+  // Pass BOTH state and city now for city-level overrides
+  const range = selectedState ? getDeliveryDateRange(selectedState, selectedCity) : null
+  const feeInfo = selectedState ? getDeliveryFee(selectedState, selectedCity, cartSubtotal) : null
 
   return (
     <>
@@ -82,7 +82,7 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
           <ChevronDown size={15} className="locpick-chev" />
         </button>
 
-        {/* CITY PILL — only show when state is selected */}
+        {/* CITY PILL */}
         {selectedState && (
           <button className="locpick-pill locpick-pill-city" onClick={() => setCitySheetOpen(true)}>
             <Building size={15} className="locpick-icon" />
@@ -97,12 +97,17 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
           </button>
         )}
 
-        {/* DELIVERY DETAILS - only show when state + city both selected */}
+        {/* DELIVERY DETAILS */}
         {selectedState && selectedCity && range && feeInfo && (
           <div className="locpick-details">
             <div className="locpick-detail-row">
               <Truck size={14} className="locpick-detail-icon" />
               <span>Get it by <strong>{range.label}</strong></span>
+              {range.fastLane && (
+                <span className="locpick-fastlane">
+                  <Zap size={11} /> Express
+                </span>
+              )}
             </div>
             <div className="locpick-detail-row">
               <span className="locpick-fee-label">Delivery fee:</span>
@@ -112,9 +117,6 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
                 <strong>{formatNaira(feeInfo.fee)}</strong>
               )}
             </div>
-            {detectionSource === 'ip' && !selectedCity && (
-              <p className="locpick-hint">Auto-detected — tap to change</p>
-            )}
           </div>
         )}
 
@@ -130,7 +132,7 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
         )}
       </div>
 
-      {/* ============ STATE BOTTOM SHEET ============ */}
+      {/* STATE BOTTOM SHEET */}
       {stateSheetOpen && (
         <div className="locpick-overlay" onClick={() => setStateSheetOpen(false)}>
           <div className="locpick-sheet" onClick={(e) => e.stopPropagation()}>
@@ -176,7 +178,7 @@ export default function LocationPicker({ cartSubtotal = 0, compact = false }) {
         </div>
       )}
 
-      {/* ============ CITY BOTTOM SHEET ============ */}
+      {/* CITY BOTTOM SHEET */}
       {citySheetOpen && (
         <div className="locpick-overlay" onClick={() => setCitySheetOpen(false)}>
           <div className="locpick-sheet" onClick={(e) => e.stopPropagation()}>
