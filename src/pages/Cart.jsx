@@ -1,12 +1,19 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, X, ArrowRight, ShoppingBag } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import ProductVisual from '../components/ProductVisual';
-import './Cart.css';
+import { Link, useNavigate } from 'react-router-dom'
+import { Minus, Plus, X, ArrowRight, ShoppingBag, MapPin } from 'lucide-react'
+import { useCart } from '../context/CartContext'
+import { useLocation } from '../context/LocationContext'
+import ProductVisual from '../components/ProductVisual'
+import { formatNaira } from '../utils/format'
+import './Cart.css'
 
 export default function Cart() {
-  const { items, subtotal, shipping, total, setQty, remove } = useCart();
-  const navigate = useNavigate();
+  const { items, subtotal, shipping, total, freeThreshold, setQty, remove } = useCart()
+  const { selectedState, selectedCity } = useLocation()
+  const navigate = useNavigate()
+
+  // Free shipping threshold (use from CartContext, fallback to ₦100,000)
+  const threshold = freeThreshold || 100000
+  const amountForFree = Math.max(0, threshold - subtotal)
 
   if (items.length === 0) {
     return (
@@ -19,7 +26,18 @@ export default function Cart() {
           <Link to="/shop" className="btn btn-accent">Browse the shop →</Link>
         </div>
       </div>
-    );
+    )
+  }
+
+  // Safe seed extractor for ProductVisual (handles both string and number IDs)
+  const getSeed = (id) => {
+    if (id === null || id === undefined) return 0
+    if (typeof id === 'number') return id
+    if (typeof id === 'string') {
+      const digits = id.replace(/\D/g, '')
+      return parseInt(digits, 10) || 0
+    }
+    return 0
   }
 
   return (
@@ -30,14 +48,26 @@ export default function Cart() {
           <h1 className="display cart-title">Your cart.</h1>
         </header>
 
+        {/* Show delivery destination if user already picked one on a PDP */}
+        {selectedState && selectedCity && (
+          <div className="cart-delivery-banner">
+            <MapPin size={16} />
+            <span>
+              Delivering to <strong>{selectedCity}, {selectedState}</strong>
+            </span>
+            <Link to="/shop" className="cart-delivery-change">Change</Link>
+          </div>
+        )}
+
         <div className="cart-grid">
           <div className="cart-lines">
             {items.map((item) => (
               <div className="cart-line" key={item.id}>
                 <div className="cart-line-visual">
                   <ProductVisual
+                    product={item}
                     category={item.category}
-                    seed={parseInt(item.id.replace('p', ''), 10)}
+                    seed={getSeed(item.id)}
                   />
                 </div>
                 <div className="cart-line-body">
@@ -47,7 +77,9 @@ export default function Cart() {
                       <Link to={`/product/${item.slug}`} className="cart-line-name display">
                         {item.name}
                       </Link>
-                      <p className="cart-line-tag">{item.tagline}</p>
+                      {item.tagline && (
+                        <p className="cart-line-tag">{item.tagline}</p>
+                      )}
                     </div>
                     <button
                       className="cart-line-remove"
@@ -68,7 +100,7 @@ export default function Cart() {
                       </button>
                     </div>
                     <span className="cart-line-price display">
-                      ${(item.price * item.qty).toFixed(2)}
+                      {formatNaira(item.price * item.qty)}
                     </span>
                   </div>
                 </div>
@@ -81,20 +113,20 @@ export default function Cart() {
             <dl className="cart-totals">
               <div>
                 <dt>Subtotal</dt>
-                <dd>${subtotal.toFixed(2)}</dd>
+                <dd>{formatNaira(subtotal)}</dd>
               </div>
               <div>
                 <dt>Shipping</dt>
-                <dd>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</dd>
+                <dd>{shipping === 0 ? 'Free' : formatNaira(shipping)}</dd>
               </div>
-              {shipping > 0 && (
+              {shipping > 0 && amountForFree > 0 && (
                 <p className="cart-shipping-note">
-                  Add ${(200 - subtotal).toFixed(2)} more for free shipping.
+                  Add <strong>{formatNaira(amountForFree)}</strong> more for free shipping.
                 </p>
               )}
               <div className="cart-total-row">
                 <dt>Total</dt>
-                <dd className="display cart-total">${total.toFixed(2)}</dd>
+                <dd className="display cart-total">{formatNaira(total)}</dd>
               </div>
             </dl>
 
@@ -104,11 +136,11 @@ export default function Cart() {
             <Link to="/shop" className="cart-continue">← Continue shopping</Link>
 
             <div className="cart-trust">
-              <p className="mono">Secure checkout. 30-day returns. 2-year warranty.</p>
+              <p className="mono">Secure checkout · 30-day returns · 1-year warranty</p>
             </div>
           </aside>
         </div>
       </div>
     </div>
-  );
+  )
 }
