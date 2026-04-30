@@ -1,26 +1,42 @@
 /* =====================================================================
    SHOPLY — Editorial × Industrial
-   Paper-warm canvas, oxblood accent, serif display + mono utility
+   Navy ink, electric-blue accent, ice-gray sections
    ===================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* ---- Light theme (clean white) ---- */
-  --bg: #ffffff;
-  --bg-elevated: #ffffff;
-  --bg-sunk: #f8f8f8;
-  --ink: #1a1613;
-  --ink-soft: #4a433c;
-  --ink-mute: #8a8177;
-  --line: #e8e8e8;
-  --line-soft: #f0f0f0;
-  --accent: #00E0FF;        /* cyan */
-  --accent-hot: #00E0FF;
-  --accent-ink: #0a0a0a;
-  --highlight: #e8c547;     /* mustard */
-  --ok: #2d5e3e;
-  --shadow: 0 1px 0 rgba(0,0,0,0.04), 0 18px 40px -20px rgba(26,22,19,0.18);
+  /* =========================================
+     BRAND PALETTE (single source of truth)
+     ========================================= */
+  --color-navy: #061633;       /* Deep Navy — text, headings, packaging */
+  --color-electric: #007BFF;   /* Electric Blue — CTAs, price, icons */
+  --color-sky: #22A8FF;        /* Sky Tech Blue — highlights, gradients */
+  --color-white: #FFFFFF;      /* White — page bg, product photos */
+  --color-ice: #F4F8FC;        /* Soft Ice Gray — sections, cards */
+
+  /* =========================================
+     LIGHT THEME — semantic tokens
+     ========================================= */
+  --bg: var(--color-white);
+  --bg-elevated: var(--color-white);
+  --bg-sunk: var(--color-ice);
+
+  --ink: var(--color-navy);
+  --ink-soft: #4a5572;
+  --ink-mute: #8993a8;
+
+  --line: #e1e7ef;
+  --line-soft: #f0f4fa;
+
+  --accent: var(--color-electric);
+  --accent-hot: var(--color-sky);
+  --accent-ink: var(--color-white);
+
+  --highlight: var(--color-sky);
+  --ok: #2d8659;
+
+  --shadow: 0 1px 0 rgba(6,22,51,0.04), 0 18px 40px -20px rgba(6,22,51,0.16);
 
   /* Type */
   --font-display: 'Sora', system-ui, sans-serif;
@@ -35,19 +51,24 @@
 }
 
 [data-theme='dark'] {
-  --bg: #14110e;
-  --bg-elevated: #1d1915;
-  --bg-sunk: #0e0c0a;
-  --ink: #f4efe6;
-  --ink-soft: #c9c0b2;
-  --ink-mute: #7a7268;
-  --line: #2d2822;
-  --line-soft: #1f1b17;
-  --accent: #d94f3d;        /* brighter on dark */
-  --accent-hot: #f06a48;
-  --accent-ink: #14110e;
-  --highlight: #f0c94a;
+  --bg: #04102a;
+  --bg-elevated: #0a1a3d;
+  --bg-sunk: #020821;
+
+  --ink: #f0f4fa;
+  --ink-soft: #b8c5db;
+  --ink-mute: #6a7794;
+
+  --line: #1a2747;
+  --line-soft: #0f1a35;
+
+  --accent: var(--color-sky);          /* Sky pops more than Electric on dark */
+  --accent-hot: #4dbcff;
+  --accent-ink: var(--color-navy);
+
+  --highlight: var(--color-sky);
   --ok: #62a477;
+
   --shadow: 0 1px 0 rgba(0,0,0,0.4), 0 20px 50px -20px rgba(0,0,0,0.6);
 }
 
