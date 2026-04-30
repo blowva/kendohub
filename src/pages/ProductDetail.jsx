@@ -5,7 +5,7 @@ import {
   ChevronRight, Play, Image as ImageIcon, Minus, Plus,
   Flame, ShieldCheck, RotateCcw, Award, Share2, GitCompare,
   Banknote, Building2, Bitcoin, X as XIcon, ChevronLeft,
-  CheckCircle2, ThumbsUp, Zap
+  CheckCircle2, ThumbsUp, Zap, LogIn
 } from 'lucide-react'
 import { products } from '../data/products'
 import { useCart } from '../context/CartContext'
@@ -16,7 +16,7 @@ import LocationPicker from '../components/LocationPicker'
 import { formatNaira } from '../utils/format'
 import { addRecentlyViewed, getRecentlyViewed } from '../utils/recentlyViewed'
 import { getReviewsForProduct, getRatingBreakdown } from '../data/reviews'
-import { FREE_DELIVERY_THRESHOLD_NGN } from '../data/deliveryZones'
+import { FREE_DELIVERY_THRESHOLD_NGN, getDeliveryFee } from '../data/deliveryZones'
 import { isPayOnDeliveryAvailable } from '../data/nigerianCities'
 import './ProductDetail.css'
 
@@ -33,39 +33,36 @@ export default function ProductDetail() {
   const [wishlisted, setWishlisted] = useState(false)
   const [compared, setCompared] = useState(false)
   const [shareToast, setShareToast] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState('transfer') // default to bank transfer (safe everywhere)
+  const [paymentMethod, setPaymentMethod] = useState('transfer')
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIdx, setLightboxIdx] = useState(0)
   const [reviewFilter, setReviewFilter] = useState('all')
   const [reviewsToShow, setReviewsToShow] = useState(4)
   const [stickyVisible, setStickyVisible] = useState(false)
 
+  // NEW: Quantity input modal state
+  const [qtyModalOpen, setQtyModalOpen] = useState(false)
+  const [qtyInputValue, setQtyInputValue] = useState('1')
+
+  // NEW: Sign-in placeholder modal for write-a-review
+  const [signinModalOpen, setSigninModalOpen] = useState(false)
+
   const heroRef = useRef(null)
 
-  // Pay on Delivery is only available in Benin City (your operations base)
   const podAvailable = isPayOnDeliveryAvailable(selectedState, selectedCity)
 
-  // If user had POD selected but switches to a city where POD isn't available,
-  // automatically switch them to Bank Transfer.
   useEffect(() => {
-    if (paymentMethod === 'pod' && !podAvailable) {
-      setPaymentMethod('transfer')
-    }
+    if (paymentMethod === 'pod' && !podAvailable) setPaymentMethod('transfer')
   }, [podAvailable, paymentMethod])
 
-  // When POD becomes available (user picked Benin City), suggest it as default
   useEffect(() => {
-    if (podAvailable && paymentMethod === 'transfer') {
-      setPaymentMethod('pod')
-    }
+    if (podAvailable && paymentMethod === 'transfer') setPaymentMethod('pod')
   }, [podAvailable])
 
-  // Track recently viewed
   useEffect(() => {
     if (product) addRecentlyViewed(product.id)
   }, [product?.id])
 
-  // Sticky scroll-aware mini bar
   useEffect(() => {
     const handleScroll = () => {
       if (!heroRef.current) return
@@ -78,9 +75,9 @@ export default function ProductDetail() {
   }, [])
 
   useEffect(() => {
-    document.body.style.overflow = lightboxOpen ? 'hidden' : ''
+    document.body.style.overflow = (lightboxOpen || qtyModalOpen || signinModalOpen) ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [lightboxOpen])
+  }, [lightboxOpen, qtyModalOpen, signinModalOpen])
 
   if (!product) {
     return (
@@ -120,12 +117,19 @@ export default function ProductDetail() {
   const activeBulkTier = [...bulkTiers].reverse().find(t => quantity >= t.qty)
   const baseTotal = product.price * quantity
   const bulkSavings = activeBulkTier ? (baseTotal * activeBulkTier.percent / 100) : 0
-  const finalTotal = baseTotal - bulkSavings
+  const subtotalAfterDiscount = baseTotal - bulkSavings
+
+  // Delivery fee calculation
+  const feeInfo = (selectedState && selectedCity)
+    ? getDeliveryFee(selectedState, selectedCity, subtotalAfterDiscount)
+    : null
+  const deliveryFee = feeInfo ? feeInfo.fee : 0
+  const grandTotal = subtotalAfterDiscount + deliveryFee
 
   const freeDeliveryThreshold = FREE_DELIVERY_THRESHOLD_NGN
-  const amountNeeded = Math.max(0, freeDeliveryThreshold - finalTotal)
-  const freeDeliveryProgress = Math.min(100, (finalTotal / freeDeliveryThreshold) * 100)
-  const qualifiesForFreeDelivery = finalTotal >= freeDeliveryThreshold
+  const amountNeeded = Math.max(0, freeDeliveryThreshold - subtotalAfterDiscount)
+  const freeDeliveryProgress = Math.min(100, (subtotalAfterDiscount / freeDeliveryThreshold) * 100)
+  const qualifiesForFreeDelivery = subtotalAfterDiscount >= freeDeliveryThreshold
 
   const reviews = getReviewsForProduct(product, 8)
   const breakdown = getRatingBreakdown(reviews)
@@ -148,10 +152,25 @@ export default function ProductDetail() {
 
   const handleQtyDecrease = () => quantity > 1 && setQuantity(quantity - 1)
   const handleQtyIncrease = () => quantity < (product.stock || 99) && setQuantity(quantity + 1)
+
+  // NEW: Open quantity modal
+  const openQtyModal = () => {
+    setQtyInputValue(String(quantity))
+    setQtyModalOpen(true)
+  }
+  const confirmQtyInput = () => {
+    const parsed = parseInt(qtyInputValue, 10)
+    if (!isNaN(parsed) && parsed >= 1) {
+      const max = product.stock || 99
+      setQuantity(Math.min(parsed, max))
+    }
+    setQtyModalOpen(false)
+  }
+
   const handleAddToCart = () => addToCart(product, quantity)
   const handleBuyNow = () => {
     addToCart(product, quantity)
-    navigate('/cart') // change to '/checkout' once you build it
+    navigate('/cart')
   }
   const handleShare = async () => {
     const url = window.location.href
@@ -163,6 +182,11 @@ export default function ProductDetail() {
       setShareToast(true)
       setTimeout(() => setShareToast(false), 2000)
     }
+  }
+
+  // NEW: Open sign-in placeholder
+  const handleWriteReviewClick = () => {
+    setSigninModalOpen(true)
   }
 
   const lightboxImages = [0, 1, 2]
@@ -260,11 +284,10 @@ export default function ProductDetail() {
         <p className="pdp-brand">SHOPLY</p>
         <h1 className="pdp-name">{product.name}</h1>
 
-        <div className="pdp-rating-row">
-          <Star size={14} fill="#FFB800" stroke="#FFB800" />
-          <span className="pdp-rating-num">{product.rating}</span>
-          <span className="pdp-reviews">({product.reviewCount} Reviews)</span>
-        </div>
+        {/* CHANGE 4a: Replaced rating row with short tagline */}
+        {product.tagline && (
+          <p className="pdp-quick-tagline">{product.tagline}</p>
+        )}
 
         <div className="pdp-price-row">
           <span className="pdp-price">{formatNaira(product.price)}</span>
@@ -338,14 +361,16 @@ export default function ProductDetail() {
         </div>
         {shareToast && <div className="pdp-toast">Link copied to clipboard ✓</div>}
 
-        {/* QUANTITY */}
+        {/* CHANGE 6: Quantity number is now tappable */}
         <div className="pdp-qty-row">
           <span className="pdp-qty-label">Quantity</span>
           <div className="pdp-qty-control">
             <button className="pdp-qty-btn" onClick={handleQtyDecrease} disabled={quantity <= 1} aria-label="Decrease">
               <Minus size={16} />
             </button>
-            <span className="pdp-qty-num">{quantity}</span>
+            <button className="pdp-qty-num pdp-qty-num-tappable" onClick={openQtyModal} aria-label="Type quantity">
+              {quantity}
+            </button>
             <button className="pdp-qty-btn" onClick={handleQtyIncrease} disabled={quantity >= (product.stock || 99)} aria-label="Increase">
               <Plus size={16} />
             </button>
@@ -361,14 +386,12 @@ export default function ProductDetail() {
         )}
 
         {/* DELIVERY (state + city) */}
-        <LocationPicker cartSubtotal={finalTotal} />
+        <LocationPicker cartSubtotal={subtotalAfterDiscount} />
 
-        {/* PAYMENT METHOD — POD only when Benin City */}
+        {/* PAYMENT */}
         <div className="pdp-payment">
           <p className="pdp-payment-title">Payment method</p>
           <div className="pdp-payment-options">
-
-            {/* Pay on Delivery — only available in Benin City */}
             {podAvailable && (
               <button
                 className={`pdp-payment-option ${paymentMethod === 'pod' ? 'is-active' : ''}`}
@@ -382,7 +405,6 @@ export default function ProductDetail() {
                 {paymentMethod === 'pod' && <CheckCircle2 size={18} className="pdp-payment-check" />}
               </button>
             )}
-
             <button
               className={`pdp-payment-option ${paymentMethod === 'transfer' ? 'is-active' : ''}`}
               onClick={() => setPaymentMethod('transfer')}
@@ -394,7 +416,6 @@ export default function ProductDetail() {
               </div>
               {paymentMethod === 'transfer' && <CheckCircle2 size={18} className="pdp-payment-check" />}
             </button>
-
             <button
               className={`pdp-payment-option ${paymentMethod === 'usdt' ? 'is-active' : ''}`}
               onClick={() => setPaymentMethod('usdt')}
@@ -407,7 +428,6 @@ export default function ProductDetail() {
               {paymentMethod === 'usdt' && <CheckCircle2 size={18} className="pdp-payment-check" />}
             </button>
           </div>
-
           {paymentMethod === 'pod' && podAvailable && (
             <p className="pdp-payment-reassurance">
               ✓ No upfront payment · ✓ Inspect item before paying · ✓ Cash or transfer at delivery
@@ -415,7 +435,7 @@ export default function ProductDetail() {
           )}
           {!podAvailable && selectedCity && (
             <p className="pdp-payment-note">
-              💡 Pay on Delivery is only available in Benin City right now. Bank Transfer & USDT available everywhere.
+              💡 Pay on Delivery is only available in Benin City right now.
             </p>
           )}
         </div>
@@ -436,9 +456,42 @@ export default function ProductDetail() {
           </div>
           {activeBulkTier && (
             <p className="pdp-bulk-savings-now">
-              You save <strong>{formatNaira(bulkSavings)}</strong> · Total: <strong>{formatNaira(finalTotal)}</strong>
+              You save <strong>{formatNaira(bulkSavings)}</strong> · Total: <strong>{formatNaira(subtotalAfterDiscount)}</strong>
             </p>
           )}
+        </div>
+
+        {/* CHANGE 1+2: ORDER SUMMARY + INLINE BUY NOW */}
+        <div className="pdp-order-summary">
+          <p className="pdp-order-title">Order summary</p>
+          <div className="pdp-order-row">
+            <span>Subtotal ({quantity} item{quantity > 1 ? 's' : ''})</span>
+            <strong>{formatNaira(baseTotal)}</strong>
+          </div>
+          {bulkSavings > 0 && (
+            <div className="pdp-order-row pdp-order-row-discount">
+              <span>Bulk discount ({activeBulkTier.percent}%)</span>
+              <strong>-{formatNaira(bulkSavings)}</strong>
+            </div>
+          )}
+          {selectedState && selectedCity && feeInfo && (
+            <div className="pdp-order-row">
+              <span>Delivery to {selectedCity}</span>
+              {feeInfo.free ? (
+                <strong className="pdp-order-free">FREE</strong>
+              ) : (
+                <strong>{formatNaira(deliveryFee)}</strong>
+              )}
+            </div>
+          )}
+          <div className="pdp-order-divider" />
+          <div className="pdp-order-row pdp-order-row-total">
+            <span>Total</span>
+            <strong>{formatNaira(grandTotal)}</strong>
+          </div>
+          <button className="pdp-order-buy-now" onClick={handleBuyNow}>
+            <Zap size={18} /> Buy Now
+          </button>
         </div>
 
         {/* META LIST */}
@@ -531,9 +584,9 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* REVIEWS */}
+        {/* CHANGE 4b: CUSTOMER REVIEWS */}
         <div className="pdp-static-section">
-          <h2 className="pdp-static-title">Reviews</h2>
+          <h2 className="pdp-static-title">Customer Reviews</h2>
 
           {breakdown && (
             <div className="pdp-rev-summary">
@@ -630,7 +683,10 @@ export default function ProductDetail() {
             </button>
           )}
 
-          <button className="pdp-rev-write">Write a review</button>
+          {/* CHANGE 4b: Write a review now opens sign-in placeholder */}
+          <button className="pdp-rev-write" onClick={handleWriteReviewClick}>
+            Write a review
+          </button>
         </div>
 
         {/* RELATED */}
@@ -669,7 +725,7 @@ export default function ProductDetail() {
         )}
       </div>
 
-      {/* STICKY BOTTOM BAR */}
+      {/* CHANGE 1: Buy Now removed from sticky bar — only ♥ + Add to Cart now */}
       <div className="pdp-bottombar">
         <button
           className={`pdp-wishlist-btn ${wishlisted ? 'is-active' : ''}`}
@@ -681,10 +737,84 @@ export default function ProductDetail() {
         <button className="pdp-add-btn" onClick={handleAddToCart}>
           Add to Cart {quantity > 1 && `· ${quantity}`}
         </button>
-        <button className="pdp-buy-btn" onClick={handleBuyNow}>
-          <Zap size={16} /> Buy Now
-        </button>
       </div>
+
+      {/* CHANGE 6: QUANTITY INPUT MODAL */}
+      {qtyModalOpen && (
+        <div className="pdp-modal-overlay" onClick={() => setQtyModalOpen(false)}>
+          <div className="pdp-modal pdp-modal-qty" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="pdp-modal-close"
+              onClick={() => setQtyModalOpen(false)}
+              aria-label="Close"
+            >
+              <XIcon size={20} />
+            </button>
+            <h3 className="pdp-modal-title">Enter quantity</h3>
+            <p className="pdp-modal-sub">
+              Max {product.stock || 99} available
+            </p>
+            <input
+              type="number"
+              min="1"
+              max={product.stock || 99}
+              value={qtyInputValue}
+              onChange={(e) => setQtyInputValue(e.target.value)}
+              className="pdp-modal-qty-input"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === 'Enter') confirmQtyInput() }}
+            />
+            <div className="pdp-modal-qty-quick">
+              {[1, 2, 5, 10, 20, 50].map(n => (
+                <button
+                  key={n}
+                  className="pdp-modal-qty-quick-btn"
+                  onClick={() => setQtyInputValue(String(n))}
+                  disabled={n > (product.stock || 99)}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <div className="pdp-modal-actions">
+              <button className="pdp-modal-cancel" onClick={() => setQtyModalOpen(false)}>
+                Cancel
+              </button>
+              <button className="pdp-modal-confirm" onClick={confirmQtyInput}>
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CHANGE 4b: SIGN-IN PLACEHOLDER MODAL */}
+      {signinModalOpen && (
+        <div className="pdp-modal-overlay" onClick={() => setSigninModalOpen(false)}>
+          <div className="pdp-modal pdp-modal-signin" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="pdp-modal-close"
+              onClick={() => setSigninModalOpen(false)}
+              aria-label="Close"
+            >
+              <XIcon size={20} />
+            </button>
+            <div className="pdp-modal-icon">
+              <LogIn size={32} />
+            </div>
+            <h3 className="pdp-modal-title">Sign in to leave a review</h3>
+            <p className="pdp-modal-sub">
+              Only customers who have signed in can post reviews. We're working on the sign-in feature now.
+            </p>
+            <div className="pdp-modal-soon">
+              <Zap size={14} /> Coming soon
+            </div>
+            <button className="pdp-modal-confirm pdp-modal-confirm-full" onClick={() => setSigninModalOpen(false)}>
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
