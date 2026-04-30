@@ -1,6 +1,7 @@
 // src/data/deliveryZones.js
 // All 36 Nigerian states + FCT grouped into 4 delivery zones.
-// Edit fees and days here when your logistics partner changes pricing.
+// Special case: Benin City gets faster delivery (24-48 hrs / 1-2 days)
+// because Shoply operations are based there.
 
 export const FREE_DELIVERY_THRESHOLD_NGN = 100000
 
@@ -51,15 +52,42 @@ export const deliveryZones = {
   'Zamfara':     { zone: 4, minDays: 4, maxDays: 6, fee: 4500 },
 }
 
-// Sorted alphabetical state list for the dropdown (Lagos pinned first).
+// City-level overrides — for cities where you can fulfill faster
+// because of local presence (Shoply HQ is in Benin City).
+export const cityOverrides = {
+  'Benin City': { minDays: 1, maxDays: 2, fee: 1500, label: '24-48 hours' },
+}
+
+// Sorted alphabetical state list (Lagos pinned first).
 export const stateList = [
   'Lagos',
   ...Object.keys(deliveryZones).filter(s => s !== 'Lagos').sort(),
 ]
 
-// Calculate delivery date range based on selected state.
-// Returns { startDate, endDate, label } where label = "Tue, May 5 – Wed, May 6"
-export function getDeliveryDateRange(stateName) {
+// Calculate delivery date range based on selected state + city.
+// Returns { startDate, endDate, label, minDays, maxDays }
+export function getDeliveryDateRange(stateName, cityName = null) {
+  // 1) Check for city-level override (e.g. Benin City)
+  if (cityName && cityOverrides[cityName]) {
+    const o = cityOverrides[cityName]
+    const today = new Date()
+    const start = new Date(today)
+    start.setDate(today.getDate() + o.minDays)
+    const end = new Date(today)
+    end.setDate(today.getDate() + o.maxDays)
+    const fmt = (d) =>
+      d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    return {
+      startDate: start,
+      endDate: end,
+      label: o.minDays === o.maxDays ? fmt(start) : `${fmt(start)} – ${fmt(end)}`,
+      minDays: o.minDays,
+      maxDays: o.maxDays,
+      fastLane: true,  // signals UI can show "express" badge
+    }
+  }
+
+  // 2) Fall back to state zone
   const zone = deliveryZones[stateName]
   if (!zone) return null
 
@@ -78,16 +106,24 @@ export function getDeliveryDateRange(stateName) {
     label: zone.minDays === zone.maxDays ? fmt(start) : `${fmt(start)} – ${fmt(end)}`,
     minDays: zone.minDays,
     maxDays: zone.maxDays,
+    fastLane: false,
   }
 }
 
-// Get delivery fee for a state, with free-delivery rule applied.
-export function getDeliveryFee(stateName, cartSubtotalNGN = 0) {
-  const zone = deliveryZones[stateName]
-  if (!zone) return null
+// Get delivery fee with city override + free-delivery rule applied.
+export function getDeliveryFee(stateName, cityName = null, cartSubtotalNGN = 0) {
+  // 1) City override
+  let baseFee = null
+  if (cityName && cityOverrides[cityName]) {
+    baseFee = cityOverrides[cityName].fee
+  } else {
+    const zone = deliveryZones[stateName]
+    if (!zone) return null
+    baseFee = zone.fee
+  }
 
   if (cartSubtotalNGN >= FREE_DELIVERY_THRESHOLD_NGN) {
-    return { fee: 0, free: true, originalFee: zone.fee }
+    return { fee: 0, free: true, originalFee: baseFee }
   }
-  return { fee: zone.fee, free: false, originalFee: zone.fee }
+  return { fee: baseFee, free: false, originalFee: baseFee }
 }
