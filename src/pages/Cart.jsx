@@ -8,7 +8,10 @@ import {
 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useLocation } from '../context/LocationContext'
-import { nigerianStates } from '../data/nigerianCities'
+import { citiesByState } from '../data/nigerianCities'
+
+// Sorted list of state names for the picker dropdown
+const STATE_NAMES = Object.keys(citiesByState).sort()
 import { getDeliveryDateRange, getDeliveryFee } from '../data/deliveryZones'
 import ProductVisual from '../components/ProductVisual'
 import { formatNaira } from '../utils/format'
@@ -29,8 +32,7 @@ export default function Cart() {
   const [draftState, setDraftState] = useState(selectedState || '')
   const [draftCity, setDraftCity] = useState(selectedCity || '')
 
-  const stateData = nigerianStates.find((s) => s.name === draftState)
-  const cityList = stateData?.cities || []
+  const cityList = citiesByState[draftState] || []
 
   const openPicker = () => {
     setDraftState(selectedState || '')
@@ -121,8 +123,8 @@ export default function Cart() {
                   className="cartv2-picker-select"
                 >
                   <option value="">Select state…</option>
-                  {nigerianStates.map((s) => (
-                    <option key={s.name} value={s.name}>{s.name}</option>
+                  {STATE_NAMES.map((name) => (
+                    <option key={name} value={name}>{name}</option>
                   ))}
                 </select>
                 <ChevronDown size={16} className="cartv2-picker-chev" />
