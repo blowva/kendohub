@@ -121,3 +121,175 @@
 @media (max-width: 860px) {
   .shop-search { min-width: 100%; }
 }
+/* ==========================================================
+   SHOP SORT DROPDOWN — append to Shop.css
+   ========================================================== */
+
+/* The wrapper handles positioning of the menu */
+.shop-sort-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Hide the old <select>-based .shop-sort styling we're replacing */
+.shop-bar .shop-sort {
+  display: none;
+}
+
+.shop-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid rgba(10, 22, 40, 0.1);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #0A1628;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.shop-sort-btn:hover {
+  border-color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.04);
+}
+
+.shop-sort-btn.is-open {
+  border-color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.06);
+}
+
+.shop-sort-btn:active {
+  transform: scale(0.97);
+}
+
+.shop-sort-icon {
+  color: #0a8bb8;
+  flex-shrink: 0;
+}
+
+.shop-sort-chevron {
+  color: #5a6678;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.shop-sort-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* Mobile: show "SORT", hide full label */
+.shop-sort-label-mobile {
+  display: inline;
+  letter-spacing: 0.1em;
+}
+
+.shop-sort-label-desktop {
+  display: none;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+}
+
+@media (min-width: 768px) {
+  .shop-sort-label-mobile {
+    display: none;
+  }
+  .shop-sort-label-desktop {
+    display: inline;
+  }
+}
+
+/* === DROPDOWN MENU === */
+
+.shop-sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid rgba(10, 22, 40, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(10, 22, 40, 0.14);
+  padding: 8px;
+  z-index: 50;
+  animation: shopSortMenuIn 0.18s ease-out;
+}
+
+@keyframes shopSortMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.shop-sort-menu-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #5a6678;
+  margin: 6px 12px 4px;
+  text-transform: uppercase;
+}
+
+.shop-sort-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #0A1628;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+
+.shop-sort-option:hover {
+  background: #f4f9fc;
+}
+
+.shop-sort-option.is-active {
+  background: rgba(45, 212, 255, 0.1);
+  color: #0A1628;
+  font-weight: 600;
+}
+
+.shop-sort-option-icon {
+  color: #5a6678;
+  flex-shrink: 0;
+}
+
+.shop-sort-option.is-active .shop-sort-option-icon {
+  color: #0a8bb8;
+}
+
+.shop-sort-option-label {
+  flex: 1;
+}
+
+.shop-sort-option-check {
+  color: #0a8bb8;
+  flex-shrink: 0;
+}
+
+/* === COUNT EXTRAS === */
+
+.shop-count-search {
+  color: #0a8bb8;
+  font-weight: 600;
+}
