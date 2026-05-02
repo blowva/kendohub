@@ -391,18 +391,22 @@
      - src/pages/Shop.css
    ========================================================== */
 
-/* The wrapper handles positioning of the popup */
+/* Wrapper handles positioning of the popup */
 .sort-pop {
   position: relative;
   flex-shrink: 0;
 }
 
-/* ===== Compact label-style popup ===== */
+/* ===== Compact label-style popup =====
+   Anchored to the RIGHT edge of the button so it never overflows
+   off the left side of the screen on mobile. */
 .sort-pop-menu {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  min-width: 180px;
+  left: auto;
+  min-width: 200px;
+  max-width: calc(100vw - 32px);
   background: #fff;
   border: 1px solid rgba(10, 22, 40, 0.1);
   border-radius: 10px;
@@ -410,6 +414,8 @@
   padding: 4px;
   z-index: 50;
   animation: sortPopIn 0.15s ease-out;
+  /* Make sure it stays visible on mobile */
+  box-sizing: border-box;
 }
 
 @keyframes sortPopIn {
@@ -429,15 +435,17 @@
   background: transparent;
   border: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #0A1628;
-  padding: 9px 12px;
+  padding: 11px 14px;
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
   transition: background 0.12s ease;
   white-space: nowrap;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .sort-pop-item:hover {
@@ -451,8 +459,39 @@
 }
 
 /* ==========================================================
-   SHOP-ONLY: button styling for the SORT pill
-   (Append the .shop-sort-btn rule to Shop.css only)
+   HOME PAGE — restore the SORT button styling
+   (Override the earlier "display: none" rule)
+   ========================================================== */
+
+.sort-pop .sec-sort-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1.5px solid rgba(10, 22, 40, 0.1);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0A1628;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.sort-pop .sec-sort-btn:hover {
+  border-color: #2DD4FF;
+}
+
+.sort-pop .sec-sort-btn:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================
+   SHOP PAGE — SORT pill styling
    ========================================================== */
 
 /* Hide the old <select>-based shop-sort layout */
@@ -496,7 +535,7 @@ button.shop-sort-btn svg {
   flex-shrink: 0;
 }
 
-/* Search count helper */
+/* Search count helper (Shop only) */
 .shop-count-search {
   color: #0a8bb8;
   font-weight: 600;
