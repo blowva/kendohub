@@ -1,14 +1,17 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug } from 'lucide-react';
+import { LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug, ArrowRight } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import HeroCarousel from '../components/HeroCarousel';
 import SearchBar from '../components/SearchBar';
 import ProductVisual from '../components/ProductVisual';
 import { products, hotProducts, newProducts, categories } from '../data/products';
+import { formatNaira } from '../utils/format';
 import './Home.css';
 
-const CARD_COLORS = ['#F5C842', '#1B3A6B', '#E8D5B5', '#F2BEC4'];
+const NGN_RATE = 1650;
+
+const CARD_COLORS = ['#F5C842', '#1B3A6B', '#E8D5B5', '#F2BEC4', '#0a8bb8', '#2c2c2c', '#d9e6f0'];
 
 const CAT_ICONS = {
   all: LayoutGrid,
@@ -26,10 +29,11 @@ const SORT_OPTIONS = [
   { value: 'rating',     label: 'Highest rated' },
 ];
 
-const hotAndNew = [
-  ...hotProducts.slice(0, 2),
-  ...newProducts.filter((p) => !hotProducts.some((h) => h.id === p.id)).slice(0, 2),
-].slice(0, 4);
+// Build the rail — Hot first, then New, deduped, capped at 7
+const hotAndNewRail = [
+  ...hotProducts,
+  ...newProducts.filter((p) => !hotProducts.some((h) => h.id === p.id)),
+].slice(0, 7);
 
 export default function Home() {
   const [selectedCat, setSelectedCat] = useState('all');
@@ -39,7 +43,6 @@ export default function Home() {
 
   const sortRef = useRef(null);
 
-  // Close sort dropdown on outside click / Escape
   useEffect(() => {
     if (!sortOpen) return;
     const onClick = (e) => {
@@ -94,18 +97,34 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Hot & New Arrivals */}
+      {/* Hot & New Arrivals — horizontal rail */}
       <section className="section">
         <div className="container">
           <div className="sec-head">
             <h2 className="display sec-title">Hot &amp; New Arrivals 🔥✨</h2>
             <Link to="/shop?filter=hot" className="sec-link">See all →</Link>
           </div>
-          <div className="hot-new-grid">
-            {hotAndNew.map((p, i) => (
-              <ArrivalCard product={p} color={CARD_COLORS[i % CARD_COLORS.length]} key={p.id} />
+        </div>
+
+        {/* Rail: full-bleed so cards can scroll past edges naturally */}
+        <div className="hot-rail-wrap">
+          <div className="hot-rail">
+            <div className="hot-rail-spacer" aria-hidden="true" />
+            {hotAndNewRail.map((p, i) => (
+              <ArrivalCard
+                product={p}
+                color={CARD_COLORS[i % CARD_COLORS.length]}
+                key={p.id}
+              />
             ))}
+            <div className="hot-rail-spacer" aria-hidden="true" />
           </div>
+        </div>
+
+        <div className="container">
+          <Link to="/shop?filter=hot" className="hot-rail-more">
+            See more hot products <ArrowRight size={14} />
+          </Link>
         </div>
       </section>
 
@@ -115,7 +134,6 @@ export default function Home() {
           <div className="sec-head">
             <h2 className="display sec-title">Categories</h2>
 
-            {/* Sort pill — always says SORT */}
             <div className="sort-pop" ref={sortRef}>
               <button
                 type="button"
@@ -214,7 +232,10 @@ function ArrivalCard({ product, color }) {
       </div>
       <div className={`arrival-info ${light ? 'on-light' : 'on-dark'}`}>
         <p className="arrival-name">{product.name}</p>
-        <p className="arrival-price">${product.price.toFixed(2)}</p>
+        {product.tagline && (
+          <p className="arrival-tagline">{product.tagline}</p>
+        )}
+        <p className="arrival-price">{formatNaira(product.price * NGN_RATE)}</p>
       </div>
     </Link>
   );
