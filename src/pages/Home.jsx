@@ -1,10 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug,
-  ChevronDown, Check,
-  TrendingUp, ArrowUpNarrowWide, ArrowDownNarrowWide, Star,
-} from 'lucide-react';
+import { LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import HeroCarousel from '../components/HeroCarousel';
 import SearchBar from '../components/SearchBar';
@@ -24,10 +20,10 @@ const CAT_ICONS = {
 };
 
 const SORT_OPTIONS = [
-  { value: 'newest',     label: 'Newest first',       icon: TrendingUp },
-  { value: 'price-asc',  label: 'Price: low to high', icon: ArrowUpNarrowWide },
-  { value: 'price-desc', label: 'Price: high to low', icon: ArrowDownNarrowWide },
-  { value: 'rating',     label: 'Highest rated',      icon: Star },
+  { value: 'newest',     label: 'Newest first' },
+  { value: 'price-asc',  label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+  { value: 'rating',     label: 'Highest rated' },
 ];
 
 const hotAndNew = [
@@ -51,9 +47,7 @@ export default function Home() {
         setSortOpen(false);
       }
     };
-    const onKey = (e) => {
-      if (e.key === 'Escape') setSortOpen(false);
-    };
+    const onKey = (e) => { if (e.key === 'Escape') setSortOpen(false); };
     document.addEventListener('mousedown', onClick);
     document.addEventListener('touchstart', onClick);
     document.addEventListener('keydown', onKey);
@@ -90,9 +84,6 @@ export default function Home() {
     return result;
   }, [selectedCat, query, sort]);
 
-  const currentSort = SORT_OPTIONS.find((o) => o.value === sort) || SORT_OPTIONS[0];
-  const SortIcon = currentSort.icon;
-
   return (
     <div className="page-enter">
       <HeroCarousel />
@@ -124,30 +115,21 @@ export default function Home() {
           <div className="sec-head">
             <h2 className="display sec-title">Categories</h2>
 
-            {/* Sort dropdown */}
-            <div className="home-sort-wrap" ref={sortRef}>
+            {/* Sort pill — always says SORT */}
+            <div className="sort-pop" ref={sortRef}>
               <button
                 type="button"
-                className={`home-sort-btn ${sortOpen ? 'is-open' : ''}`}
+                className="sec-sort-btn"
                 onClick={() => setSortOpen((o) => !o)}
                 aria-haspopup="listbox"
                 aria-expanded={sortOpen}
               >
-                <SortIcon size={13} strokeWidth={1.8} className="home-sort-icon" />
-                <span className="home-sort-label">{currentSort.label}</span>
-                <span className="home-sort-label-mobile">Sort</span>
-                <ChevronDown
-                  size={13}
-                  strokeWidth={2}
-                  className={`home-sort-chev ${sortOpen ? 'is-open' : ''}`}
-                />
+                Sort
               </button>
 
               {sortOpen && (
-                <div className="home-sort-menu" role="listbox" aria-label="Sort products">
-                  <p className="home-sort-menu-head">Sort by</p>
+                <div className="sort-pop-menu" role="listbox" aria-label="Sort products">
                   {SORT_OPTIONS.map((opt) => {
-                    const Icon = opt.icon;
                     const isActive = opt.value === sort;
                     return (
                       <button
@@ -155,17 +137,13 @@ export default function Home() {
                         type="button"
                         role="option"
                         aria-selected={isActive}
-                        className={`home-sort-option ${isActive ? 'is-active' : ''}`}
+                        className={`sort-pop-item ${isActive ? 'is-active' : ''}`}
                         onClick={() => {
                           setSort(opt.value);
                           setSortOpen(false);
                         }}
                       >
-                        <Icon size={14} strokeWidth={1.8} className="home-sort-option-icon" />
-                        <span className="home-sort-option-label">{opt.label}</span>
-                        {isActive && (
-                          <Check size={13} strokeWidth={2.5} className="home-sort-option-check" />
-                        )}
+                        {opt.label}
                       </button>
                     );
                   })}
@@ -214,7 +192,6 @@ export default function Home() {
 function ArrivalCard({ product, color }) {
   const light = isLightColor(color);
 
-  // Handle product.id whether it is a string ('p1') or a number (1)
   const seedValue = typeof product.id === 'string'
     ? parseInt(product.id.replace(/\D/g, ''), 10) || 0
     : (product.id || 0);
