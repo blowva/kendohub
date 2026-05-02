@@ -222,3 +222,165 @@
   .product-grid-4 { grid-template-columns: repeat(4, 1fr); }
   .product-grid { gap: 20px; }
 }
+/* ==========================================================
+   HOME SORT DROPDOWN — append to Home.css
+   ========================================================== */
+
+/* Hide the old plain "Sort" button if you've kept it elsewhere */
+.sec-sort-btn {
+  display: none;
+}
+
+.home-sort-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.home-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1.5px solid rgba(10, 22, 40, 0.1);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0A1628;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.home-sort-btn:hover {
+  border-color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.04);
+}
+
+.home-sort-btn.is-open {
+  border-color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.06);
+}
+
+.home-sort-btn:active {
+  transform: scale(0.97);
+}
+
+.home-sort-icon {
+  color: #0a8bb8;
+  flex-shrink: 0;
+}
+
+.home-sort-chev {
+  color: #5a6678;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+.home-sort-chev.is-open {
+  transform: rotate(180deg);
+}
+
+/* Mobile shows just "Sort"; desktop shows full label */
+.home-sort-label {
+  display: none;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.home-sort-label-mobile {
+  display: inline;
+  letter-spacing: 0.06em;
+}
+
+@media (min-width: 768px) {
+  .home-sort-label {
+    display: inline;
+  }
+  .home-sort-label-mobile {
+    display: none;
+  }
+}
+
+/* === DROPDOWN MENU === */
+
+.home-sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid rgba(10, 22, 40, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(10, 22, 40, 0.14);
+  padding: 8px;
+  z-index: 50;
+  animation: homeSortMenuIn 0.18s ease-out;
+}
+
+@keyframes homeSortMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.home-sort-menu-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #5a6678;
+  margin: 6px 12px 4px;
+  text-transform: uppercase;
+}
+
+.home-sort-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #0A1628;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+
+.home-sort-option:hover {
+  background: #f4f9fc;
+}
+
+.home-sort-option.is-active {
+  background: rgba(45, 212, 255, 0.1);
+  font-weight: 600;
+}
+
+.home-sort-option-icon {
+  color: #5a6678;
+  flex-shrink: 0;
+}
+
+.home-sort-option.is-active .home-sort-option-icon {
+  color: #0a8bb8;
+}
+
+.home-sort-option-label {
+  flex: 1;
+}
+
+.home-sort-option-check {
+  color: #0a8bb8;
+  flex-shrink: 0;
+}
