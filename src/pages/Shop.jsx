@@ -1,32 +1,22 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  SlidersHorizontal,
-  Search as SearchIcon,
-  ChevronDown,
-  Check,
-  Sparkles,
-  TrendingUp,
-  ArrowDownNarrowWide,
-  ArrowUpNarrowWide,
-  Star,
-} from 'lucide-react';
+import { SlidersHorizontal, Search as SearchIcon } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { products, categories } from '../data/products';
 import './Shop.css';
 
 const SORT_OPTIONS = [
-  { value: 'featured',   label: 'Featured',            icon: Sparkles },
-  { value: 'newest',     label: 'Newest first',        icon: TrendingUp },
-  { value: 'price-asc',  label: 'Price: low to high',  icon: ArrowUpNarrowWide },
-  { value: 'price-desc', label: 'Price: high to low',  icon: ArrowDownNarrowWide },
-  { value: 'rating',     label: 'Highest rated',       icon: Star },
+  { value: 'featured',   label: 'Featured' },
+  { value: 'newest',     label: 'Newest first' },
+  { value: 'price-asc',  label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+  { value: 'rating',     label: 'Highest rated' },
 ];
 
 export default function Shop() {
   const [params, setParams] = useSearchParams();
   const activeCat = params.get('cat') || 'all';
-  const filter = params.get('filter') || null; // 'hot' | 'new' | null
+  const filter = params.get('filter') || null;
   const urlSearch = params.get('search') || '';
 
   const [sort, setSort] = useState('featured');
@@ -37,12 +27,9 @@ export default function Shop() {
 
   useEffect(() => { window.scrollTo({ top: 0 }); }, []);
 
-  // If the URL changes (e.g. arriving from search overlay), update query input
-  useEffect(() => {
-    setQuery(urlSearch);
-  }, [urlSearch]);
+  useEffect(() => { setQuery(urlSearch); }, [urlSearch]);
 
-  // Close sort dropdown on outside click
+  // Close sort on outside click / Escape
   useEffect(() => {
     if (!sortOpen) return;
     const onClick = (e) => {
@@ -50,9 +37,7 @@ export default function Shop() {
         setSortOpen(false);
       }
     };
-    const onKey = (e) => {
-      if (e.key === 'Escape') setSortOpen(false);
-    };
+    const onKey = (e) => { if (e.key === 'Escape') setSortOpen(false); };
     document.addEventListener('mousedown', onClick);
     document.addEventListener('touchstart', onClick);
     document.addEventListener('keydown', onKey);
@@ -96,18 +81,10 @@ export default function Shop() {
 
   const handleSearchChange = (val) => {
     setQuery(val);
-    // Keep URL in sync so search persists on refresh / share
     const next = new URLSearchParams(params);
-    if (val.trim()) {
-      next.set('search', val);
-    } else {
-      next.delete('search');
-    }
+    if (val.trim()) next.set('search', val); else next.delete('search');
     setParams(next, { replace: true });
   };
-
-  const currentSort = SORT_OPTIONS.find((o) => o.value === sort) || SORT_OPTIONS[0];
-  const SortIcon = currentSort.icon;
 
   return (
     <div className="page-enter shop">
@@ -145,30 +122,22 @@ export default function Shop() {
             ))}
           </div>
 
-          {/* Custom sort dropdown */}
-          <div className="shop-sort-wrap" ref={sortRef}>
+          {/* Clean SORT pill */}
+          <div className="sort-pop shop-sort-wrap" ref={sortRef}>
             <button
               type="button"
-              className={`shop-sort-btn ${sortOpen ? 'is-open' : ''}`}
+              className="shop-sort-btn"
               onClick={() => setSortOpen((o) => !o)}
               aria-haspopup="listbox"
               aria-expanded={sortOpen}
             >
-              <SortIcon size={14} strokeWidth={1.8} className="shop-sort-icon" />
-              <span className="shop-sort-label-mobile">SORT</span>
-              <span className="shop-sort-label-desktop">{currentSort.label}</span>
-              <ChevronDown
-                size={14}
-                strokeWidth={2}
-                className={`shop-sort-chevron ${sortOpen ? 'is-open' : ''}`}
-              />
+              <SlidersHorizontal size={14} strokeWidth={1.5} />
+              <span>Sort</span>
             </button>
 
             {sortOpen && (
-              <div className="shop-sort-menu" role="listbox" aria-label="Sort products">
-                <p className="shop-sort-menu-head">Sort by</p>
+              <div className="sort-pop-menu" role="listbox" aria-label="Sort products">
                 {SORT_OPTIONS.map((opt) => {
-                  const Icon = opt.icon;
                   const isActive = opt.value === sort;
                   return (
                     <button
@@ -176,17 +145,13 @@ export default function Shop() {
                       type="button"
                       role="option"
                       aria-selected={isActive}
-                      className={`shop-sort-option ${isActive ? 'is-active' : ''}`}
+                      className={`sort-pop-item ${isActive ? 'is-active' : ''}`}
                       onClick={() => {
                         setSort(opt.value);
                         setSortOpen(false);
                       }}
                     >
-                      <Icon size={15} strokeWidth={1.8} className="shop-sort-option-icon" />
-                      <span className="shop-sort-option-label">{opt.label}</span>
-                      {isActive && (
-                        <Check size={14} strokeWidth={2.5} className="shop-sort-option-check" />
-                      )}
+                      {opt.label}
                     </button>
                   );
                 })}
