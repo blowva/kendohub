@@ -1,6 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug } from 'lucide-react';
+import {
+  LayoutGrid, Projector, Monitor, Cpu, Headphones, Plug,
+  ChevronDown, Check,
+  TrendingUp, ArrowUpNarrowWide, ArrowDownNarrowWide, Star,
+} from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import HeroCarousel from '../components/HeroCarousel';
 import SearchBar from '../components/SearchBar';
@@ -19,6 +23,13 @@ const CAT_ICONS = {
   accessories: Plug,
 };
 
+const SORT_OPTIONS = [
+  { value: 'newest',     label: 'Newest first',       icon: TrendingUp },
+  { value: 'price-asc',  label: 'Price: low to high', icon: ArrowUpNarrowWide },
+  { value: 'price-desc', label: 'Price: high to low', icon: ArrowDownNarrowWide },
+  { value: 'rating',     label: 'Highest rated',      icon: Star },
+];
+
 const hotAndNew = [
   ...hotProducts.slice(0, 2),
   ...newProducts.filter((p) => !hotProducts.some((h) => h.id === p.id)).slice(0, 2),
@@ -27,9 +38,37 @@ const hotAndNew = [
 export default function Home() {
   const [selectedCat, setSelectedCat] = useState('all');
   const [query, setQuery] = useState('');
+  const [sort, setSort] = useState('newest');
+  const [sortOpen, setSortOpen] = useState(false);
+
+  const sortRef = useRef(null);
+
+  // Close sort dropdown on outside click / Escape
+  useEffect(() => {
+    if (!sortOpen) return;
+    const onClick = (e) => {
+      if (sortRef.current && !sortRef.current.contains(e.target)) {
+        setSortOpen(false);
+      }
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') setSortOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('touchstart', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('touchstart', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [sortOpen]);
 
   const filteredProducts = useMemo(() => {
-    let result = selectedCat === 'all' ? products : products.filter((p) => p.category === selectedCat);
+    let result = selectedCat === 'all'
+      ? [...products]
+      : products.filter((p) => p.category === selectedCat);
+
     if (query.trim()) {
       const q = query.toLowerCase();
       result = result.filter(
@@ -39,8 +78,20 @@ export default function Home() {
           p.tagline?.toLowerCase().includes(q)
       );
     }
+
+    switch (sort) {
+      case 'price-asc':  result.sort((a, b) => a.price - b.price); break;
+      case 'price-desc': result.sort((a, b) => b.price - a.price); break;
+      case 'rating':     result.sort((a, b) => b.rating - a.rating); break;
+      case 'newest':     result.sort((a, b) => Number(b.isNew) - Number(a.isNew)); break;
+      default: break;
+    }
+
     return result;
-  }, [selectedCat, query]);
+  }, [selectedCat, query, sort]);
+
+  const currentSort = SORT_OPTIONS.find((o) => o.value === sort) || SORT_OPTIONS[0];
+  const SortIcon = currentSort.icon;
 
   return (
     <div className="page-enter">
@@ -72,8 +123,57 @@ export default function Home() {
         <div className="container">
           <div className="sec-head">
             <h2 className="display sec-title">Categories</h2>
-            <button className="sec-sort-btn">Sort</button>
+
+            {/* Sort dropdown */}
+            <div className="home-sort-wrap" ref={sortRef}>
+              <button
+                type="button"
+                className={`home-sort-btn ${sortOpen ? 'is-open' : ''}`}
+                onClick={() => setSortOpen((o) => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={sortOpen}
+              >
+                <SortIcon size={13} strokeWidth={1.8} className="home-sort-icon" />
+                <span className="home-sort-label">{currentSort.label}</span>
+                <span className="home-sort-label-mobile">Sort</span>
+                <ChevronDown
+                  size={13}
+                  strokeWidth={2}
+                  className={`home-sort-chev ${sortOpen ? 'is-open' : ''}`}
+                />
+              </button>
+
+              {sortOpen && (
+                <div className="home-sort-menu" role="listbox" aria-label="Sort products">
+                  <p className="home-sort-menu-head">Sort by</p>
+                  {SORT_OPTIONS.map((opt) => {
+                    const Icon = opt.icon;
+                    const isActive = opt.value === sort;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        role="option"
+                        aria-selected={isActive}
+                        className={`home-sort-option ${isActive ? 'is-active' : ''}`}
+                        onClick={() => {
+                          setSort(opt.value);
+                          setSortOpen(false);
+                        }}
+                      >
+                        <Icon size={14} strokeWidth={1.8} className="home-sort-option-icon" />
+                        <span className="home-sort-option-label">{opt.label}</span>
+                        {isActive && (
+                          <Check size={13} strokeWidth={2.5} className="home-sort-option-check" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
+
           <div className="cat-row">
             {categories.map((c) => {
               const Icon = CAT_ICONS[c.id] || LayoutGrid;
