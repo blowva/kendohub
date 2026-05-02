@@ -410,3 +410,13 @@ button.shop-sort-btn svg {
   color: #0a8bb8;
   font-weight: 600;
 }
+/* ==========================================================
+   SHOP PAGE — anchor the SORT popup to the LEFT
+   Append this AT THE VERY END of src/pages/Shop.css
+   (after the existing sort-popup block you already pasted)
+   ========================================================== */
+
+.shop-sort-wrap .sort-pop-menu {
+  left: 0;
+  right: auto;
+}
