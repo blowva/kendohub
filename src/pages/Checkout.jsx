@@ -250,10 +250,10 @@ export default function Checkout() {
               </h2>
               <div className="checkv2-section-body">
                 <div className="checkv2-row">
-                  <Field label="Email" type="email" required />
+                  <Field label="Full name" type="email" required />
                   <Field label="Phone" type="tel" required />
                 </div>
-                <Field label="Full name" required />
+                <Field label="Email" required />
                 <Field label="Address" required />
                 <div className="checkv2-row">
                   <Field
