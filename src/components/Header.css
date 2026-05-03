@@ -274,3 +274,47 @@
   color: #8896a8;
   margin: 0;
 }
+/* ============================================
+   ADD THIS TO THE BOTTOM OF Header.css
+   ============================================ */
+
+/* === HEADER TRACK PILL === */
+.header-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(45, 212, 255, 0.1);
+  border: 1px solid rgba(45, 212, 255, 0.3);
+  color: var(--brand-cyan, #2DD4FF);
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.header-track:hover {
+  background: var(--brand-cyan, #2DD4FF);
+  color: var(--brand-navy, #0A1628);
+  transform: translateY(-1px);
+}
+
+.header-track svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .header-track {
+    padding: 5px 9px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  .header-track svg {
+    width: 12px;
+    height: 12px;
+  }
+}
