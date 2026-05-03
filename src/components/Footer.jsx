@@ -1,78 +1,70 @@
-import { Link } from 'react-router-dom'
-import { Instagram, Twitter, Youtube, Github } from 'lucide-react'
-import './Footer.css'
+import { Link } from 'react-router-dom';
+import { Instagram, Twitter, Mail } from 'lucide-react';
+import './Footer.css';
 
 export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <Link to="/" className="footer-logo">
-              <span className="footer-logo-mark">◆</span>
-              <span className="footer-logo-text">Shoply</span>
-            </Link>
-            <p className="footer-tagline">
-              Studio-grade audio, cinema projectors, and the gadgets that make
-              every day feel a little more dialed in.
-            </p>
-            <div className="footer-socials">
-              <a href="#" aria-label="Instagram" className="footer-social">
-                <Instagram size={18} />
-              </a>
-              <a href="#" aria-label="Twitter" className="footer-social">
-                <Twitter size={18} />
-              </a>
-              <a href="#" aria-label="YouTube" className="footer-social">
-                <Youtube size={18} />
-              </a>
-              <a href="#" aria-label="GitHub" className="footer-social">
-                <Github size={18} />
-              </a>
-            </div>
+      <div className="container footer-inner">
+
+        {/* Brand block */}
+        <div className="footer-brand">
+          <Link to="/" className="footer-logo" aria-label="Kendo Hub home">
+            <span className="footer-logo-kendo">Kendo</span>
+            <span className="footer-logo-hub">Hub</span>
+          </Link>
+          <p className="footer-tagline">
+            Premium gadgets, delivered with care.
+          </p>
+          <p className="footer-domain">kendohub.co</p>
+        </div>
+
+        {/* Links */}
+        <div className="footer-cols">
+          <div className="footer-col">
+            <p className="footer-col-title">Shop</p>
+            <Link to="/shop">All products</Link>
+            <Link to="/shop?filter=hot">Hot drops</Link>
+            <Link to="/shop?filter=new">New arrivals</Link>
+            <Link to="/track">Track package</Link>
           </div>
 
           <div className="footer-col">
-            <h4 className="footer-col-title">Shop</h4>
-            <ul className="footer-list">
-              <li><Link to="/shop">All products</Link></li>
-              <li><Link to="/shop?filter=new">New arrivals</Link></li>
-              <li><Link to="/shop?filter=hot">Hot drops</Link></li>
-              <li><Link to="/shop?category=projectors">Projectors</Link></li>
-              <li><Link to="/shop?category=audio">Audio</Link></li>
-            </ul>
+            <p className="footer-col-title">Support</p>
+            <Link to="/refund-policy">Refund policy</Link>
+            <Link to="/policies">All policies</Link>
+            <Link to="/account">My account</Link>
+            <Link to="/cart">Cart</Link>
           </div>
 
           <div className="footer-col">
-            <h4 className="footer-col-title">Help</h4>
-            <ul className="footer-list">
-              <li><Link to="/account">My account</Link></li>
-              <li><Link to="/cart">Cart</Link></li>
-              <li><Link to="/policies">Shipping</Link></li>
-              <li><Link to="/policies">Returns</Link></li>
-              <li><Link to="/about">Contact</Link></li>
-            </ul>
-          </div>
-
-          <div className="footer-col">
-            <h4 className="footer-col-title">Company</h4>
-            <ul className="footer-list">
-              <li><Link to="/about">About</Link></li>
-              <li><Link to="/policies">Privacy</Link></li>
-              <li><Link to="/policies">Terms</Link></li>
-            </ul>
+            <p className="footer-col-title">Affiliate</p>
+            <Link to="/affiliate">Earn with us</Link>
+            <Link to="/affiliate/about">How it works</Link>
+            <Link to="/about">About Kendo Hub</Link>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p className="footer-copy">
-            © {new Date().getFullYear()} Shoply. All rights reserved.
-          </p>
-          <p className="footer-built">
-            Crafted in Lagos · Shipped worldwide
-          </p>
+        {/* Socials */}
+        <div className="footer-social">
+          <a href="https://instagram.com/kendohub" target="_blank" rel="noreferrer" aria-label="Instagram">
+            <Instagram size={18} strokeWidth={1.5} />
+          </a>
+          <a href="https://twitter.com/kendohub" target="_blank" rel="noreferrer" aria-label="Twitter / X">
+            <Twitter size={18} strokeWidth={1.5} />
+          </a>
+          <a href="mailto:hello@kendohub.co" aria-label="Email">
+            <Mail size={18} strokeWidth={1.5} />
+          </a>
         </div>
       </div>
+
+      <div className="footer-bottom">
+        <p>&copy; {year} Kendo Hub. All rights reserved.</p>
+        <p className="footer-bottom-meta">Made in Benin City · Shipping nationwide 🇳🇬</p>
+      </div>
     </footer>
-  )
+  );
 }
