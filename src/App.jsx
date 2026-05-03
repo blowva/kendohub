@@ -1,4 +1,3 @@
-import AdminProductTest from './pages/AdminProductTest';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -11,6 +10,7 @@ import Affiliate from './pages/Affiliate';
 import AffiliateAbout from './pages/AffiliateAbout';
 import RefundPolicy from './pages/RefundPolicy';
 import Track from './pages/Track';
+import AdminProductTest from './pages/AdminProductTest';
 import { About, Account, Policies, NotFound } from './pages/Misc';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -35,6 +35,7 @@ export default function App() {
               <Route path="/policies" element={<Policies />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/track" element={<Track />} />
+              <Route path="/admin/product-test" element={<AdminProductTest />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
