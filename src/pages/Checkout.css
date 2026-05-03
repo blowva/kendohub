@@ -1,4 +1,4 @@
-/* ============ MODERN CHECKOUT V4 ============ */
+/* ============ MODERN CHECKOUT V5 ============ */
 
 .checkv2 {
   background: #FFFFFF;
@@ -61,10 +61,10 @@
   transform: translateY(-1px);
 }
 
-/* ============ HEADER (TIGHT STACK) ============ */
+/* ============ HEADER ============ */
 .checkv2-head {
   padding: 8px 18px 0;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .checkv2-eyebrow {
@@ -86,7 +86,7 @@
   line-height: 1;
 }
 
-/* ============ STEPPER (now inside header, tight) ============ */
+/* ============ STEPPER ============ */
 .checkv2-steps {
   display: flex;
   align-items: center;
@@ -154,6 +154,56 @@
     width: 24px;
     height: 24px;
     font-size: 10px;
+  }
+}
+
+/* ============ TRUST BADGES CARD ============ */
+.checkv2-trust-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0A1628 0%, #15243f 100%);
+  color: #FFFFFF;
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin: 0 18px 24px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(45, 212, 255, 0.2);
+}
+
+.checkv2-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 0.01em;
+}
+
+.checkv2-trust-item svg {
+  color: #2DD4FF;
+  flex-shrink: 0;
+}
+
+.checkv2-trust-divider {
+  width: 4px;
+  height: 4px;
+  background: #2DD4FF;
+  opacity: 0.4;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 900px) {
+  .checkv2-trust-card {
+    margin: 0 18px 28px;
+    gap: 14px;
+    padding: 14px 18px;
+  }
+  .checkv2-trust-item {
+    font-size: 12.5px;
   }
 }
 
@@ -396,13 +446,14 @@
   border-top: 1px dashed #E3E8EF;
 }
 
-/* ============ SUMMARY ============ */
+/* ============ NAVY SUMMARY (the new bold look) ============ */
 .checkv2-summary {
-  background: #F8FAFC;
-  border: 1px solid #EEF2F6;
+  background: linear-gradient(165deg, #0A1628 0%, #15243f 100%);
+  border: 1px solid rgba(45, 212, 255, 0.2);
   border-radius: 16px;
-  padding: 20px;
+  padding: 22px;
   margin: 0 18px;
+  color: #FFFFFF;
 }
 
 @media (min-width: 900px) {
@@ -419,7 +470,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #6B7A90;
+  color: #2DD4FF;
   margin: 0 0 16px;
 }
 
@@ -427,7 +478,7 @@
   list-style: none;
   padding: 0;
   margin: 0 0 16px;
-  border-bottom: 1px dashed #E3E8EF;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
 }
 
 .checkv2-item {
@@ -441,14 +492,14 @@
   font-family: var(--font-display, 'Sora', sans-serif);
   font-size: 14px;
   font-weight: 700;
-  color: #0A1628;
+  color: #FFFFFF;
   margin: 0;
   line-height: 1.3;
 }
 
 .checkv2-item-qty {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.55);
   margin: 2px 0 0;
   font-size: 11px;
   letter-spacing: 0.05em;
@@ -458,155 +509,54 @@
   font-family: var(--font-display, 'Sora', sans-serif);
   font-size: 14px;
   font-weight: 700;
-  color: #0A1628;
+  color: #FFFFFF;
   white-space: nowrap;
 }
 
-/* ============ COMPACT EXTRAS (coupon / points / note) ============ */
-.checkv2-extras {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px dashed #E3E8EF;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+/* ============ DISCOUNT BLOCKS (always visible inside navy) ============ */
+.checkv2-discount-block {
+  background: rgba(45, 212, 255, 0.06);
+  border: 1px solid rgba(45, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
 }
 
-.checkv2-extra-item {
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.checkv2-extra-item.is-applied {
-  margin-bottom: 2px;
-}
-
-/* The toggle button (e.g., "Have a coupon code?") */
-.checkv2-extra-toggle {
-  width: 100%;
+.checkv2-discount-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: transparent;
-  border: 1px dashed #E3E8EF;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  color: #0A1628;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.15s ease;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
-.checkv2-extra-toggle:hover {
-  border-color: #2DD4FF;
-  background: rgba(45, 212, 255, 0.04);
-}
-
-.checkv2-extra-toggle > svg:first-child {
+.checkv2-discount-head svg {
   color: #2DD4FF;
   flex-shrink: 0;
 }
 
-.checkv2-extra-toggle > span {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.checkv2-extra-toggle > svg:last-child {
-  color: #6B7A90;
-  flex-shrink: 0;
-}
-
-.checkv2-extra-badge {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 10px;
-  font-weight: 600;
-  font-style: normal;
-  letter-spacing: 0.04em;
-  color: #6B7A90;
-  background: #FFFFFF;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid #E3E8EF;
-}
-
-.checkv2-extra-badge-active {
-  color: #16A34A;
-  background: #DCFCE7;
-  border-color: #86EFAC;
-}
-
-/* The expanded body */
-.checkv2-extra-body {
-  padding: 12px 4px 4px;
-  animation: checkv2ExtraSlide 0.18s ease-out;
-}
-
-@keyframes checkv2ExtraSlide {
-  from { opacity: 0; transform: translateY(-3px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Applied state — compact pill */
-.checkv2-applied-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #DCFCE7 0%, #ECFDF3 100%);
-  border: 1.5px solid #86EFAC;
-  border-radius: 10px;
-  padding: 9px 12px;
-  font-size: 12.5px;
-  color: #14532D;
-}
-
-.checkv2-applied-pill strong {
+.checkv2-discount-head h3 {
   font-family: var(--font-display, 'Sora', sans-serif);
+  font-size: 13px;
   font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
   letter-spacing: -0.005em;
+  flex: 1;
 }
 
-.checkv2-applied-pill > span {
-  color: #15803D;
-  font-weight: 500;
+.checkv2-points-balance {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #2DD4FF;
+  font-weight: 600;
+  background: rgba(45, 212, 255, 0.12);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 212, 255, 0.3);
 }
 
-.checkv2-applied-check {
-  color: #16A34A;
-  flex-shrink: 0;
-}
-
-.checkv2-applied-pill > svg {
-  color: #16A34A;
-  flex-shrink: 0;
-}
-
-.checkv2-applied-remove {
-  margin-left: auto;
-  background: rgba(20, 83, 45, 0.1);
-  color: #14532D;
-  border: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s ease;
-}
-
-.checkv2-applied-remove:hover {
-  background: rgba(20, 83, 45, 0.18);
-}
-
-/* Input row for coupon / points */
+/* Input + button row */
 .checkv2-input-row {
   display: flex;
   gap: 6px;
@@ -616,10 +566,10 @@
 .checkv2-discount-input {
   flex: 1;
   padding: 10px 12px;
-  background: #FFFFFF;
-  border: 1.5px solid #E3E8EF;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  color: #0A1628;
+  color: #FFFFFF;
   font-size: 13px;
   font-family: inherit;
   transition: all 0.2s ease;
@@ -630,22 +580,23 @@
 
 .checkv2-discount-input:focus {
   border-color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.06);
   box-shadow: 0 0 0 3px rgba(45, 212, 255, 0.15);
 }
 
 .checkv2-discount-input::placeholder {
-  color: #9CA8B8;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .checkv2-discount-apply {
-  background: #0A1628;
-  color: #FFFFFF;
+  background: #2DD4FF;
+  color: #0A1628;
   border: none;
-  padding: 0 14px;
+  padding: 0 16px;
   border-radius: 8px;
   font-family: var(--font-display, 'Sora', sans-serif);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   letter-spacing: 0.02em;
   transition: all 0.2s ease;
@@ -653,42 +604,42 @@
 }
 
 .checkv2-discount-apply:hover:not(:disabled) {
-  background: #1A2842;
+  background: #1FC4F0;
   transform: translateY(-1px);
 }
 
 .checkv2-discount-apply:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
 .checkv2-discount-error {
   font-size: 11px;
-  color: #DC2626;
+  color: #FCA5A5;
   font-weight: 500;
   margin: 4px 0 0;
 }
 
 .checkv2-discount-hint {
   font-size: 10.5px;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.55);
   margin: 4px 0 0;
   letter-spacing: 0.01em;
 }
 
 .checkv2-discount-hint code {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  background: #FFFFFF;
-  padding: 1px 5px;
+  background: rgba(45, 212, 255, 0.14);
+  padding: 1px 6px;
   border-radius: 3px;
-  border: 1px solid #E3E8EF;
+  border: 1px solid rgba(45, 212, 255, 0.3);
   font-size: 10px;
-  color: #0A1628;
+  color: #2DD4FF;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 
-/* Empty points state */
+/* Empty points */
 .checkv2-points-empty {
   text-align: center;
   padding: 4px 0;
@@ -696,15 +647,15 @@
 
 .checkv2-points-empty p {
   font-size: 11.5px;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0 0 8px;
   line-height: 1.45;
 }
 
 .checkv2-dev-btn {
-  background: #FFFFFF;
-  border: 1.5px dashed #C0C7D0;
-  color: #6B7A90;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px dashed rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
   padding: 6px 12px;
   border-radius: 6px;
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
@@ -717,11 +668,11 @@
 
 .checkv2-dev-btn:hover {
   border-color: #2DD4FF;
-  color: #0A1628;
-  background: #ECFDFF;
+  color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.06);
 }
 
-/* Use all points */
+/* Use all points link */
 .checkv2-points-useall {
   background: transparent;
   border: none;
@@ -738,17 +689,139 @@
 }
 
 .checkv2-points-useall:hover {
-  color: #0A8BB8;
+  color: #FFFFFF;
 }
 
-/* Note textarea */
+/* Applied pill */
+.checkv2-applied-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1.5px solid rgba(34, 197, 94, 0.4);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  color: #BBF7D0;
+}
+
+.checkv2-applied-pill strong {
+  font-family: var(--font-display, 'Sora', sans-serif);
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.005em;
+}
+
+.checkv2-applied-pill > span {
+  color: #BBF7D0;
+  font-weight: 500;
+}
+
+.checkv2-applied-check {
+  color: #22C55E;
+  flex-shrink: 0;
+}
+
+.checkv2-applied-pill > svg {
+  color: #22C55E;
+  flex-shrink: 0;
+}
+
+.checkv2-applied-remove {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.checkv2-applied-remove:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============ NOTE TO SELLER (collapsible) ============ */
+.checkv2-extra-item {
+  margin-bottom: 16px;
+}
+
+.checkv2-extra-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.checkv2-extra-toggle:hover {
+  border-color: rgba(45, 212, 255, 0.4);
+  background: rgba(45, 212, 255, 0.06);
+}
+
+.checkv2-extra-toggle > svg:first-child {
+  color: #2DD4FF;
+  flex-shrink: 0;
+}
+
+.checkv2-extra-toggle > span {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkv2-extra-toggle > svg:last-child {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.checkv2-extra-badge-active {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: #22C55E;
+  background: rgba(34, 197, 94, 0.18);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.checkv2-extra-body {
+  padding: 12px 4px 4px;
+  animation: checkv2ExtraSlide 0.18s ease-out;
+}
+
+@keyframes checkv2ExtraSlide {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .checkv2-note-input {
   width: 100%;
   padding: 10px 12px;
-  background: #FFFFFF;
-  border: 1.5px solid #E3E8EF;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  color: #0A1628;
+  color: #FFFFFF;
   font-size: 13px;
   font-family: inherit;
   transition: all 0.2s ease;
@@ -761,11 +834,12 @@
 
 .checkv2-note-input:focus {
   border-color: #2DD4FF;
+  background: rgba(45, 212, 255, 0.06);
   box-shadow: 0 0 0 3px rgba(45, 212, 255, 0.15);
 }
 
 .checkv2-note-input::placeholder {
-  color: #9CA8B8;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .checkv2-note-foot {
@@ -778,7 +852,7 @@
 
 .checkv2-note-hint {
   font-size: 10.5px;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.55);
   flex: 1;
 }
 
@@ -786,47 +860,48 @@
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 10px;
   letter-spacing: 0.04em;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 600;
   flex-shrink: 0;
 }
 
-/* ============ TOTALS ============ */
+/* ============ TOTALS (on navy) ============ */
 .checkv2-totals {
   margin: 0;
-  padding: 0;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
 }
 
 .checkv2-totals > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 7px 0;
   font-size: 13px;
 }
 
 .checkv2-totals dt {
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.65);
   font-weight: 500;
 }
 
 .checkv2-totals dt span {
   font-size: 11px;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .checkv2-totals dd {
   margin: 0;
   font-family: var(--font-display, 'Sora', sans-serif);
   font-weight: 700;
-  color: #0A1628;
+  color: #FFFFFF;
 }
 
 .checkv2-totals-discount dt {
   display: flex !important;
   align-items: center;
   gap: 6px;
-  color: #16A34A !important;
+  color: #4ADE80 !important;
   font-weight: 600 !important;
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 11px !important;
@@ -834,27 +909,27 @@
 }
 
 .checkv2-totals-discount dt svg {
-  color: #16A34A;
+  color: #4ADE80;
   flex-shrink: 0;
 }
 
 .checkv2-totals-discount dd {
-  color: #16A34A !important;
+  color: #4ADE80 !important;
   font-family: var(--font-display, 'Sora', sans-serif) !important;
 }
 
 .checkv2-totals-est dt,
 .checkv2-totals-est dd {
   font-size: 12px;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
 }
 
 .checkv2-free {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-weight: 700;
-  color: #16A34A;
-  background: #DCFCE7;
+  color: #4ADE80;
+  background: rgba(34, 197, 94, 0.18);
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 11px;
@@ -864,34 +939,35 @@
 .checkv2-total-row {
   padding-top: 14px !important;
   margin-top: 8px;
-  border-top: 1px solid #E3E8EF;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .checkv2-total-row dt {
   font-family: var(--font-display, 'Sora', sans-serif) !important;
   font-size: 15px !important;
   font-weight: 700 !important;
-  color: #0A1628 !important;
+  color: #FFFFFF !important;
 }
 
 .checkv2-total-row dd {
   font-size: 24px !important;
   font-weight: 800 !important;
   letter-spacing: -0.02em;
+  color: #2DD4FF !important;
 }
 
-/* Earnings preview in summary */
+/* Earnings preview */
 .checkv2-summary-earn {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-top: 12px;
   padding: 8px 12px;
-  background: linear-gradient(135deg, #ECFDFF 0%, #F0FAFF 100%);
-  border: 1px solid #BAE6FD;
+  background: rgba(45, 212, 255, 0.1);
+  border: 1px solid rgba(45, 212, 255, 0.3);
   border-radius: 10px;
   font-size: 11.5px;
-  color: #0369A1;
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.4;
 }
 
@@ -901,7 +977,7 @@
 }
 
 .checkv2-summary-earn strong {
-  color: #0A1628;
+  color: #FFFFFF;
   font-weight: 700;
 }
 
@@ -912,17 +988,17 @@
   gap: 6px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px dashed #E3E8EF;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
   font-size: 11px;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.65);
   font-weight: 500;
 }
 
 .checkv2-summary-trust svg {
-  color: #16A34A;
+  color: #4ADE80;
 }
 
-/* ============ SUBMIT (now inside summary, conditional color) ============ */
+/* ============ SUBMIT BUTTON (inside summary) ============ */
 .checkv2-submit {
   display: flex;
   align-items: center;
@@ -941,23 +1017,25 @@
   margin: 16px 0 0;
   transition: all 0.2s ease;
   letter-spacing: 0.01em;
+  box-shadow: 0 4px 12px rgba(45, 212, 255, 0.25);
 }
 
 .checkv2-submit:hover {
   background: #1FC4F0;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(45, 212, 255, 0.3);
+  box-shadow: 0 6px 18px rgba(45, 212, 255, 0.4);
 }
 
 /* Pay on Delivery — green button */
 .checkv2-submit.is-pod {
-  background: #16A34A;
+  background: #22C55E;
   color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .checkv2-submit.is-pod:hover {
-  background: #15803D;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  background: #16A34A;
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45);
 }
 
 .checkv2-secure {
@@ -969,7 +1047,7 @@
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 10px;
   letter-spacing: 0.1em;
-  color: #6B7A90;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
 }
 
