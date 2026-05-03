@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   Check, CreditCard, Lock, Banknote, Building2, Bitcoin,
   ShieldCheck, ArrowRight, CheckCircle2, Tag, Coins, FileText,
-  Sparkles, X, Star
+  Sparkles, X, ChevronDown, ChevronUp
 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useLocation } from '../context/LocationContext'
@@ -12,11 +12,10 @@ import { getDeliveryFee, getDeliveryDateRange } from '../data/deliveryZones'
 import { formatNaira } from '../utils/format'
 import './Checkout.css'
 
-// === LOCAL STORAGE KEYS ===
+// === LOCAL STORAGE ===
 const POINTS_KEY = 'shoply_points'
 
 // === DEMO COUPON CODES ===
-// In production these would come from Supabase
 const VALID_COUPONS = {
   'WELCOME10':   { type: 'percent', value: 10, label: '10% off' },
   'SHOPLY5':     { type: 'percent', value: 5,  label: '5% off' },
@@ -24,9 +23,8 @@ const VALID_COUPONS = {
   'NEWCUSTOMER': { type: 'percent', value: 15, label: '15% off' },
 }
 
-// === POINTS LOGIC ===
-const POINTS_PER_NAIRA = 1 / 100   // earn 1 point per ₦100 spent
-const POINT_VALUE = 1              // 1 point = ₦1
+const POINTS_PER_NAIRA = 1 / 100
+const POINT_VALUE = 1
 
 function getStoredPoints() {
   if (typeof window === 'undefined') return 0
@@ -46,29 +44,30 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState('transfer')
   const navigate = useNavigate()
 
-  // === COUPON STATE ===
+  // Coupon state
   const [couponInput, setCouponInput] = useState('')
-  const [appliedCoupon, setAppliedCoupon] = useState(null) // { code, type, value, label }
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [couponError, setCouponError] = useState('')
+  const [couponOpen, setCouponOpen] = useState(false)
 
-  // === POINTS STATE ===
+  // Points state
   const [pointsBalance, setPointsBalance] = useState(0)
   const [pointsToRedeem, setPointsToRedeem] = useState(0)
   const [pointsInput, setPointsInput] = useState('')
   const [pointsError, setPointsError] = useState('')
+  const [pointsOpen, setPointsOpen] = useState(false)
 
-  // === NOTE STATE ===
+  // Note state
   const [orderNote, setOrderNote] = useState('')
+  const [noteOpen, setNoteOpen] = useState(false)
   const NOTE_MAX = 500
 
-  // Load points balance on mount
   useEffect(() => {
     setPointsBalance(getStoredPoints())
   }, [])
 
   const podAvailable = isPayOnDeliveryAvailable(selectedState, selectedCity)
 
-  // Recalculate delivery using zone-aware logic
   const feeInfo = (selectedState && selectedCity)
     ? getDeliveryFee(selectedState, selectedCity, subtotal)
     : null
@@ -78,7 +77,7 @@ export default function Checkout() {
   const deliveryFee = feeInfo ? feeInfo.fee : (subtotal > 0 && subtotal < 100000 ? 1500 : 0)
   const isFreeDelivery = deliveryFee === 0 && subtotal > 0
 
-  // === DISCOUNT CALCULATIONS ===
+  // Discount calculations
   const couponDiscount = appliedCoupon
     ? appliedCoupon.type === 'percent'
       ? Math.floor(subtotal * (appliedCoupon.value / 100))
@@ -86,13 +85,9 @@ export default function Checkout() {
     : 0
 
   const pointsDiscount = pointsToRedeem * POINT_VALUE
-
-  // Make sure combined discount can't exceed subtotal
   const totalDiscount = Math.min(couponDiscount + pointsDiscount, subtotal)
   const discountedSubtotal = subtotal - totalDiscount
   const total = discountedSubtotal + deliveryFee
-
-  // Points the customer will EARN from this order (after discounts)
   const pointsEarned = Math.floor(discountedSubtotal * POINTS_PER_NAIRA)
 
   if (items.length === 0 && !placed) {
@@ -113,17 +108,12 @@ export default function Checkout() {
   const applyCoupon = () => {
     setCouponError('')
     const code = couponInput.trim().toUpperCase()
-    if (!code) {
-      setCouponError('Enter a coupon code')
-      return
-    }
+    if (!code) { setCouponError('Enter a coupon code'); return }
     const coupon = VALID_COUPONS[code]
-    if (!coupon) {
-      setCouponError('Invalid or expired coupon')
-      return
-    }
+    if (!coupon) { setCouponError('Invalid or expired coupon'); return }
     setAppliedCoupon({ code, ...coupon })
     setCouponInput('')
+    setCouponOpen(false)
   }
 
   const removeCoupon = () => {
@@ -134,7 +124,6 @@ export default function Checkout() {
   // === POINTS HANDLERS ===
   const handlePointsInputChange = (val) => {
     setPointsError('')
-    // Only allow numbers
     const cleaned = val.replace(/\D/g, '')
     setPointsInput(cleaned)
   }
@@ -142,22 +131,13 @@ export default function Checkout() {
   const applyPoints = () => {
     setPointsError('')
     const n = parseInt(pointsInput, 10) || 0
-    if (n <= 0) {
-      setPointsError('Enter a number greater than 0')
-      return
-    }
-    if (n > pointsBalance) {
-      setPointsError(`You only have ${pointsBalance.toLocaleString()} points`)
-      return
-    }
-    // Cap at subtotal minus already-applied coupon
+    if (n <= 0) { setPointsError('Enter a number greater than 0'); return }
+    if (n > pointsBalance) { setPointsError(`You only have ${pointsBalance.toLocaleString()} points`); return }
     const maxRedeemable = Math.max(0, subtotal - couponDiscount)
-    if (n * POINT_VALUE > maxRedeemable) {
-      setPointsError(`Max redeemable: ${maxRedeemable.toLocaleString()} points`)
-      return
-    }
+    if (n * POINT_VALUE > maxRedeemable) { setPointsError(`Max redeemable: ${maxRedeemable.toLocaleString()} points`); return }
     setPointsToRedeem(n)
     setPointsInput('')
+    setPointsOpen(false)
   }
 
   const useAllPoints = () => {
@@ -166,6 +146,7 @@ export default function Checkout() {
     setPointsToRedeem(useAmount)
     setPointsInput('')
     setPointsError('')
+    setPointsOpen(false)
   }
 
   const removePoints = () => {
@@ -173,7 +154,6 @@ export default function Checkout() {
     setPointsError('')
   }
 
-  // === DEV: seed test points ===
   const seedTestPoints = () => {
     const newBalance = pointsBalance + 5000
     setStoredPoints(newBalance)
@@ -182,13 +162,9 @@ export default function Checkout() {
 
   const placeOrder = (e) => {
     e.preventDefault()
-
-    // Deduct redeemed points + add earned points
     const newBalance = pointsBalance - pointsToRedeem + pointsEarned
     setStoredPoints(newBalance)
     setPointsBalance(newBalance)
-
-    // In production: send order including orderNote, appliedCoupon, pointsToRedeem
     setPlaced(true)
     clear()
   }
@@ -227,52 +203,43 @@ export default function Checkout() {
   }
 
   const isCard = paymentMethod === 'card'
+  const isPOD = paymentMethod === 'pod'
+  const ctaLabel = isPOD ? 'Place Order' : 'Pay Now'
 
   return (
     <div className="checkv2 page-enter">
       <div className="checkv2-container">
 
-        {/* HEADER */}
+        {/* HEADER + STEPPER (tight stack) */}
         <header className="checkv2-head">
           <p className="checkv2-eyebrow">CHECKOUT</p>
           <h1 className="checkv2-title">Almost there.</h1>
-        </header>
 
-        {/* STEPPER */}
-        <div className="checkv2-steps">
-          {['Contact', 'Shipping', 'Discounts', 'Payment'].map((label, i) => (
-            <div className="checkv2-step is-active" key={label}>
-              <span className="checkv2-step-num">{String(i + 1).padStart(2, '0')}</span>
-              <span className="checkv2-step-label">{label}</span>
-              {i < 3 && <span className="checkv2-step-line" />}
-            </div>
-          ))}
-        </div>
+          <div className="checkv2-steps">
+            {['Details', 'Payment', 'Done'].map((label, i) => (
+              <div className="checkv2-step is-active" key={label}>
+                <span className="checkv2-step-num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="checkv2-step-label">{label}</span>
+                {i < 2 && <span className="checkv2-step-line" />}
+              </div>
+            ))}
+          </div>
+        </header>
 
         <div className="checkv2-grid">
           <form className="checkv2-form" onSubmit={placeOrder}>
 
-            {/* === CONTACT === */}
+            {/* === CUSTOMER DETAILS (Contact + Shipping merged) === */}
             <section className="checkv2-section">
               <h2 className="checkv2-section-title">
                 <span className="checkv2-section-num">01</span>
-                Contact
+                Customer Details
               </h2>
               <div className="checkv2-section-body">
                 <div className="checkv2-row">
                   <Field label="Email" type="email" required />
                   <Field label="Phone" type="tel" required />
                 </div>
-              </div>
-            </section>
-
-            {/* === SHIPPING === */}
-            <section className="checkv2-section">
-              <h2 className="checkv2-section-title">
-                <span className="checkv2-section-num">02</span>
-                Shipping
-              </h2>
-              <div className="checkv2-section-body">
                 <div className="checkv2-row">
                   <Field label="First name" required />
                   <Field label="Last name" required />
@@ -299,226 +266,15 @@ export default function Checkout() {
               </div>
             </section>
 
-            {/* === DISCOUNTS & NOTES === */}
-            <section className="checkv2-section">
-              <h2 className="checkv2-section-title">
-                <span className="checkv2-section-num">03</span>
-                Discounts & Notes
-              </h2>
-              <div className="checkv2-section-body">
-
-                {/* === COUPON CODE === */}
-                <div className="checkv2-discount-block">
-                  <div className="checkv2-discount-head">
-                    <Tag size={16} className="checkv2-discount-icon" />
-                    <h3>Coupon code</h3>
-                  </div>
-
-                  {!appliedCoupon ? (
-                    <>
-                      <div className="checkv2-input-row">
-                        <input
-                          type="text"
-                          value={couponInput}
-                          onChange={(e) => {
-                            setCouponInput(e.target.value)
-                            setCouponError('')
-                          }}
-                          placeholder="Enter code"
-                          className="checkv2-discount-input"
-                          autoComplete="off"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault()
-                              applyCoupon()
-                            }
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={applyCoupon}
-                          className="checkv2-discount-apply"
-                          disabled={!couponInput.trim()}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                      {couponError && (
-                        <p className="checkv2-discount-error">{couponError}</p>
-                      )}
-                      <p className="checkv2-discount-hint">
-                        Try: <code>WELCOME10</code> or <code>NEWCUSTOMER</code>
-                      </p>
-                    </>
-                  ) : (
-                    <div className="checkv2-applied">
-                      <CheckCircle2 size={16} className="checkv2-applied-check" />
-                      <div className="checkv2-applied-body">
-                        <strong>{appliedCoupon.code}</strong>
-                        <span>{appliedCoupon.label} · -{formatNaira(couponDiscount)}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={removeCoupon}
-                        className="checkv2-applied-remove"
-                        aria-label="Remove coupon"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* === STORE POINTS === */}
-                <div className="checkv2-discount-block">
-                  <div className="checkv2-discount-head">
-                    <Coins size={16} className="checkv2-discount-icon" />
-                    <h3>Shoply Points</h3>
-                    <span className="checkv2-points-balance">
-                      {pointsBalance.toLocaleString()} available
-                    </span>
-                  </div>
-
-                  {pointsBalance === 0 ? (
-                    <div className="checkv2-points-empty">
-                      <p>You don't have any points yet. Earn them by shopping and reviewing.</p>
-                      <button
-                        type="button"
-                        onClick={seedTestPoints}
-                        className="checkv2-dev-btn"
-                      >
-                        + Add 5,000 test points
-                      </button>
-                    </div>
-                  ) : pointsToRedeem === 0 ? (
-                    <>
-                      <div className="checkv2-input-row">
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          value={pointsInput}
-                          onChange={(e) => handlePointsInputChange(e.target.value)}
-                          placeholder="How many points?"
-                          className="checkv2-discount-input"
-                          autoComplete="off"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault()
-                              applyPoints()
-                            }
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={applyPoints}
-                          className="checkv2-discount-apply"
-                          disabled={!pointsInput}
-                        >
-                          Apply
-                        </button>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={useAllPoints}
-                        className="checkv2-points-useall"
-                      >
-                        Use all {pointsBalance.toLocaleString()} points
-                      </button>
-                      {pointsError && (
-                        <p className="checkv2-discount-error">{pointsError}</p>
-                      )}
-                      <p className="checkv2-discount-hint">
-                        1 point = ₦1 · Earn 1 point per ₦100 spent
-                      </p>
-                    </>
-                  ) : (
-                    <div className="checkv2-applied">
-                      <CheckCircle2 size={16} className="checkv2-applied-check" />
-                      <div className="checkv2-applied-body">
-                        <strong>{pointsToRedeem.toLocaleString()} points</strong>
-                        <span>-{formatNaira(pointsDiscount)}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={removePoints}
-                        className="checkv2-applied-remove"
-                        aria-label="Remove points"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* === EARNINGS PREVIEW === */}
-                {pointsEarned > 0 && (
-                  <div className="checkv2-earn-preview">
-                    <Sparkles size={14} />
-                    <p>
-                      You'll earn <strong>{pointsEarned.toLocaleString()} points</strong> from this
-                      order, released after delivery + return window closes.
-                    </p>
-                  </div>
-                )}
-
-                {/* === HOW TO EARN === */}
-                <details className="checkv2-earn-info">
-                  <summary>
-                    <Star size={13} />
-                    <span>How to earn more Shoply Points</span>
-                  </summary>
-                  <ul>
-                    <li>
-                      <strong>Shop:</strong> 1 point per ₦100 spent — released after delivery and
-                      return window closes
-                    </li>
-                    <li>
-                      <strong>Review:</strong> 500 points per product review (verified buyers only,
-                      one review per product, minimum 100 characters)
-                    </li>
-                  </ul>
-                </details>
-
-                {/* === ORDER NOTE === */}
-                <div className="checkv2-discount-block">
-                  <div className="checkv2-discount-head">
-                    <FileText size={16} className="checkv2-discount-icon" />
-                    <h3>Note to seller <span className="checkv2-optional">optional</span></h3>
-                  </div>
-                  <textarea
-                    value={orderNote}
-                    onChange={(e) => {
-                      if (e.target.value.length <= NOTE_MAX) {
-                        setOrderNote(e.target.value)
-                      }
-                    }}
-                    placeholder="e.g., Please call before delivering. Leave at the gate. Gift wrap if possible..."
-                    className="checkv2-note-input"
-                    rows={3}
-                    maxLength={NOTE_MAX}
-                  />
-                  <div className="checkv2-note-foot">
-                    <span className="checkv2-note-hint">
-                      Special instructions for delivery or packaging
-                    </span>
-                    <span className="checkv2-note-counter">
-                      {orderNote.length}/{NOTE_MAX}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             {/* === PAYMENT === */}
             <section className="checkv2-section">
               <h2 className="checkv2-section-title">
-                <span className="checkv2-section-num">04</span>
+                <span className="checkv2-section-num">02</span>
                 Payment
               </h2>
               <div className="checkv2-section-body">
 
                 <div className="checkv2-pay-options">
-                  {/* Pay on Delivery (Benin only) */}
                   {podAvailable && (
                     <button
                       type="button"
@@ -534,7 +290,6 @@ export default function Checkout() {
                     </button>
                   )}
 
-                  {/* Bank Transfer */}
                   <button
                     type="button"
                     className={`checkv2-pay-option ${paymentMethod === 'transfer' ? 'is-active' : ''}`}
@@ -548,7 +303,6 @@ export default function Checkout() {
                     {paymentMethod === 'transfer' && <CheckCircle2 size={18} className="checkv2-pay-check" />}
                   </button>
 
-                  {/* Card */}
                   <button
                     type="button"
                     className={`checkv2-pay-option ${paymentMethod === 'card' ? 'is-active' : ''}`}
@@ -562,7 +316,6 @@ export default function Checkout() {
                     {paymentMethod === 'card' && <CheckCircle2 size={18} className="checkv2-pay-check" />}
                   </button>
 
-                  {/* USDT */}
                   <button
                     type="button"
                     className={`checkv2-pay-option ${paymentMethod === 'usdt' ? 'is-active' : ''}`}
@@ -577,7 +330,6 @@ export default function Checkout() {
                   </button>
                 </div>
 
-                {/* Card fields ONLY when Card is selected */}
                 {isCard && (
                   <div className="checkv2-card-fields">
                     <Field label="Card number" placeholder="•••• •••• •••• ••••" required />
@@ -588,7 +340,7 @@ export default function Checkout() {
                   </div>
                 )}
 
-                {paymentMethod === 'pod' && (
+                {isPOD && (
                   <p className="checkv2-pay-reassurance">
                     ✓ No upfront payment · ✓ Inspect item before paying · ✓ Cash or transfer at delivery
                   </p>
@@ -608,17 +360,12 @@ export default function Checkout() {
               </div>
             </section>
 
-            <button type="submit" className="checkv2-submit">
-              <Lock size={14} /> Place Order — {formatNaira(total)}
-            </button>
-            <p className="checkv2-secure">
-              <Lock size={11} /> SSL encrypted · Your details are never stored
-            </p>
           </form>
 
-          {/* SUMMARY */}
+          {/* === ORDER SUMMARY (with coupon + points + note inline) === */}
           <aside className="checkv2-summary">
             <h2 className="checkv2-summary-title">Your order</h2>
+
             <ul className="checkv2-items">
               {items.map((item) => (
                 <li key={item.id} className="checkv2-item">
@@ -630,28 +377,208 @@ export default function Checkout() {
                 </li>
               ))}
             </ul>
+
+            {/* === COMPACT EXTRAS: COUPON / POINTS / NOTE === */}
+            <div className="checkv2-extras">
+
+              {/* COUPON */}
+              {!appliedCoupon ? (
+                <div className="checkv2-extra-item">
+                  <button
+                    type="button"
+                    className="checkv2-extra-toggle"
+                    onClick={() => setCouponOpen(!couponOpen)}
+                  >
+                    <Tag size={14} />
+                    <span>Have a coupon code?</span>
+                    {couponOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+                  {couponOpen && (
+                    <div className="checkv2-extra-body">
+                      <div className="checkv2-input-row">
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={(e) => { setCouponInput(e.target.value); setCouponError('') }}
+                          placeholder="Enter code"
+                          className="checkv2-discount-input"
+                          autoComplete="off"
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon() } }}
+                        />
+                        <button
+                          type="button"
+                          onClick={applyCoupon}
+                          className="checkv2-discount-apply"
+                          disabled={!couponInput.trim()}
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {couponError && <p className="checkv2-discount-error">{couponError}</p>}
+                      <p className="checkv2-discount-hint">Try: <code>WELCOME10</code></p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="checkv2-extra-item is-applied">
+                  <div className="checkv2-applied-pill">
+                    <CheckCircle2 size={14} className="checkv2-applied-check" />
+                    <Tag size={12} />
+                    <strong>{appliedCoupon.code}</strong>
+                    <span>· {appliedCoupon.label}</span>
+                    <button
+                      type="button"
+                      onClick={removeCoupon}
+                      className="checkv2-applied-remove"
+                      aria-label="Remove coupon"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SHOPLY POINTS */}
+              {pointsToRedeem === 0 ? (
+                <div className="checkv2-extra-item">
+                  <button
+                    type="button"
+                    className="checkv2-extra-toggle"
+                    onClick={() => setPointsOpen(!pointsOpen)}
+                  >
+                    <Coins size={14} />
+                    <span>
+                      Use Shoply Points
+                      {pointsBalance > 0 && (
+                        <em className="checkv2-extra-badge">{pointsBalance.toLocaleString()}</em>
+                      )}
+                    </span>
+                    {pointsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+                  {pointsOpen && (
+                    <div className="checkv2-extra-body">
+                      {pointsBalance === 0 ? (
+                        <div className="checkv2-points-empty">
+                          <p>You don't have any points yet. Earn 1 point per ₦100 spent and 500 points per review.</p>
+                          <button
+                            type="button"
+                            onClick={seedTestPoints}
+                            className="checkv2-dev-btn"
+                          >
+                            + Add 5,000 test points
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="checkv2-input-row">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={pointsInput}
+                              onChange={(e) => handlePointsInputChange(e.target.value)}
+                              placeholder="How many points?"
+                              className="checkv2-discount-input"
+                              autoComplete="off"
+                              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyPoints() } }}
+                            />
+                            <button
+                              type="button"
+                              onClick={applyPoints}
+                              className="checkv2-discount-apply"
+                              disabled={!pointsInput}
+                            >
+                              Apply
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={useAllPoints}
+                            className="checkv2-points-useall"
+                          >
+                            Use all {pointsBalance.toLocaleString()} points
+                          </button>
+                          {pointsError && <p className="checkv2-discount-error">{pointsError}</p>}
+                          <p className="checkv2-discount-hint">1 point = ₦1</p>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="checkv2-extra-item is-applied">
+                  <div className="checkv2-applied-pill">
+                    <CheckCircle2 size={14} className="checkv2-applied-check" />
+                    <Coins size={12} />
+                    <strong>{pointsToRedeem.toLocaleString()} points</strong>
+                    <span>· -{formatNaira(pointsDiscount)}</span>
+                    <button
+                      type="button"
+                      onClick={removePoints}
+                      className="checkv2-applied-remove"
+                      aria-label="Remove points"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* NOTE TO SELLER */}
+              <div className="checkv2-extra-item">
+                <button
+                  type="button"
+                  className="checkv2-extra-toggle"
+                  onClick={() => setNoteOpen(!noteOpen)}
+                >
+                  <FileText size={14} />
+                  <span>
+                    Note to seller
+                    {orderNote && (
+                      <em className="checkv2-extra-badge checkv2-extra-badge-active">added</em>
+                    )}
+                  </span>
+                  {noteOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </button>
+                {noteOpen && (
+                  <div className="checkv2-extra-body">
+                    <textarea
+                      value={orderNote}
+                      onChange={(e) => {
+                        if (e.target.value.length <= NOTE_MAX) {
+                          setOrderNote(e.target.value)
+                        }
+                      }}
+                      placeholder="e.g., Please call before delivering. Leave at the gate..."
+                      className="checkv2-note-input"
+                      rows={3}
+                      maxLength={NOTE_MAX}
+                    />
+                    <div className="checkv2-note-foot">
+                      <span className="checkv2-note-hint">Special instructions for delivery</span>
+                      <span className="checkv2-note-counter">{orderNote.length}/{NOTE_MAX}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* TOTALS */}
             <dl className="checkv2-totals">
               <div>
                 <dt>Subtotal</dt>
                 <dd>{formatNaira(subtotal)}</dd>
               </div>
 
-              {/* Coupon discount line */}
               {appliedCoupon && (
                 <div className="checkv2-totals-discount">
-                  <dt>
-                    <Tag size={11} /> {appliedCoupon.code}
-                  </dt>
+                  <dt><Tag size={11} /> {appliedCoupon.code}</dt>
                   <dd>-{formatNaira(couponDiscount)}</dd>
                 </div>
               )}
 
-              {/* Points discount line */}
               {pointsToRedeem > 0 && (
                 <div className="checkv2-totals-discount">
-                  <dt>
-                    <Coins size={11} /> {pointsToRedeem.toLocaleString()} points
-                  </dt>
+                  <dt><Coins size={11} /> {pointsToRedeem.toLocaleString()} points</dt>
                   <dd>-{formatNaira(pointsDiscount)}</dd>
                 </div>
               )}
@@ -681,13 +608,10 @@ export default function Checkout() {
               </div>
             </dl>
 
-            {/* Earnings preview in summary */}
             {pointsEarned > 0 && (
               <div className="checkv2-summary-earn">
                 <Sparkles size={12} />
-                <span>
-                  You'll earn <strong>{pointsEarned.toLocaleString()} points</strong>
-                </span>
+                <span>You'll earn <strong>{pointsEarned.toLocaleString()} points</strong></span>
               </div>
             )}
 
@@ -695,6 +619,18 @@ export default function Checkout() {
               <ShieldCheck size={16} />
               <span>Secure checkout · 48-hour returns</span>
             </div>
+
+            {/* === CTA: BELOW SUMMARY === */}
+            <button
+              type="button"
+              onClick={placeOrder}
+              className={`checkv2-submit ${isPOD ? 'is-pod' : ''}`}
+            >
+              <Lock size={14} /> {ctaLabel} — {formatNaira(total)}
+            </button>
+            <p className="checkv2-secure">
+              <Lock size={11} /> SSL encrypted · Your details are never stored
+            </p>
           </aside>
         </div>
       </div>
