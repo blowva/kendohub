@@ -3,7 +3,6 @@ import { ShoppingBag, Search, Sun, Moon, Menu, X, Home, Flame, Sparkles, Ticket,
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
-import SearchOverlay from './SearchOverlay';
 import './Header.css';
 
 const NAV_ITEMS = [
@@ -15,7 +14,7 @@ const NAV_ITEMS = [
   { label: 'About Affiliate',  to: '/affiliate/about', icon: Info },
   { label: 'About',            to: '/about',           icon: Users },
   { label: 'Account',          to: '/account',         icon: User },
-  { label: 'Refund Policy',    to: '/policies',        icon: RotateCcw },
+  { label: 'Refund Policy',    to: '/refund-policy',   icon: RotateCcw },
   { label: 'Policies',         to: '/policies',        icon: FileText },
 ];
 
@@ -23,7 +22,6 @@ export default function Header() {
   const { itemCount } = useCart();
   const { theme, toggle } = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
 
@@ -33,7 +31,7 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Lock body scroll when drawer is open (search overlay handles its own lock)
+  // Lock body scroll when drawer is open
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -60,11 +58,7 @@ export default function Header() {
           <div className="header-spacer" />
 
           <div className="header-actions">
-            <button
-              className="icon-btn"
-              aria-label="Search"
-              onClick={() => setSearchOpen(true)}
-            >
+            <button className="icon-btn" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </button>
             <button className="icon-btn" aria-label="Toggle theme" onClick={toggle}>
@@ -77,9 +71,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-
-      {/* Search Overlay */}
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Drawer */}
       {drawerOpen && (
