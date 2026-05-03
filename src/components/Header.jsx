@@ -1,21 +1,22 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Search, Sun, Moon, Menu, X, Home, Flame, Sparkles, Ticket, Info, Users, User, RotateCcw, FileText, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Search, Sun, Moon, Menu, X, Home, Flame, Sparkles, Ticket, Info, Users, User, RotateCcw, FileText, ChevronRight, Package } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import './Header.css';
 
 const NAV_ITEMS = [
-  { label: 'Home',             to: '/',                icon: Home },
-  { label: 'Shop',             to: '/shop',            icon: ShoppingBag },
-  { label: 'Hot Drops',        to: '/shop?filter=hot', icon: Flame },
-  { label: 'New Arrivals',     to: '/shop?filter=new', icon: Sparkles },
-  { label: 'Coupon Affiliate', to: '/affiliate',       icon: Ticket },
-  { label: 'About Affiliate',  to: '/affiliate/about', icon: Info },
-  { label: 'About',            to: '/about',           icon: Users },
-  { label: 'Account',          to: '/account',         icon: User },
-  { label: 'Refund Policy',    to: '/refund-policy',   icon: RotateCcw },
-  { label: 'Policies',         to: '/policies',        icon: FileText },
+  { label: 'Home',                to: '/',                icon: Home },
+  { label: 'Shop',                to: '/shop',            icon: ShoppingBag },
+  { label: 'Hot Drops',           to: '/shop?filter=hot', icon: Flame },
+  { label: 'New Arrivals',        to: '/shop?filter=new', icon: Sparkles },
+  { label: 'Track your package',  to: '/track',           icon: Package },
+  { label: 'Coupon Affiliate',    to: '/affiliate',       icon: Ticket },
+  { label: 'About Affiliate',     to: '/affiliate/about', icon: Info },
+  { label: 'About',               to: '/about',           icon: Users },
+  { label: 'Account',             to: '/account',         icon: User },
+  { label: 'Refund Policy',       to: '/refund-policy',   icon: RotateCcw },
+  { label: 'Policies',            to: '/policies',        icon: FileText },
 ];
 
 export default function Header() {
@@ -61,6 +62,13 @@ export default function Header() {
             <button className="icon-btn" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </button>
+
+            {/* TRACK link — text label */}
+            <Link to="/track" className="header-track" aria-label="Track your package">
+              <Package size={14} strokeWidth={2} />
+              <span>Track</span>
+            </Link>
+
             <button className="icon-btn" aria-label="Toggle theme" onClick={toggle}>
               {theme === 'light' ? <Moon size={18} strokeWidth={1.5} /> : <Sun size={18} strokeWidth={1.5} />}
             </button>
