@@ -34,13 +34,11 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Lock body scroll when drawer is open (search overlay handles its own lock)
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
 
-  // Close drawer on navigation
   useEffect(() => { setDrawerOpen(false); }, [location]);
 
   const close = () => setDrawerOpen(false);
@@ -53,9 +51,11 @@ export default function Header() {
             <Menu size={20} />
           </button>
 
-          <Link to="/" className="logo" aria-label="Shoply home">
-            <span className="logo-mark">◆</span>
-            <span className="logo-wordmark">Shoply</span>
+          <Link to="/" className="logo" aria-label="Kendo Hub home">
+            <span className="logo-wordmark">
+              <span className="logo-kendo">Kendo</span>
+              <span className="logo-hub">Hub</span>
+            </span>
           </Link>
 
           <div className="header-spacer" />
@@ -69,7 +69,6 @@ export default function Header() {
               <Search size={18} strokeWidth={1.5} />
             </button>
 
-            {/* TRACK link */}
             <Link to="/track" className="header-track" aria-label="Track your package">
               <Package size={14} strokeWidth={2} />
               <span>Track</span>
@@ -86,16 +85,13 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Search Overlay */}
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      {/* Drawer */}
       {drawerOpen && (
         <>
           <div className="drawer-backdrop" onClick={close} aria-hidden="true" />
           <div className="drawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
 
-            {/* Navy header */}
             <div className="drawer-header">
               <div className="drawer-header-top">
                 <span className="drawer-menu-label">MENU</span>
@@ -107,7 +103,6 @@ export default function Header() {
               <p className="drawer-welcome-sub">Sign in to track your orders</p>
             </div>
 
-            {/* Nav items */}
             <div className="drawer-body">
               <nav className="drawer-nav">
                 {NAV_ITEMS.map(({ label, to, icon: Icon }) => (
@@ -122,7 +117,6 @@ export default function Header() {
                   </NavLink>
                 ))}
 
-                {/* Dark mode toggle */}
                 <div className="drawer-item drawer-item-toggle">
                   <span className="drawer-icon">
                     {theme === 'light' ? <Sun size={18} strokeWidth={1.5} /> : <Moon size={18} strokeWidth={1.5} />}
@@ -139,9 +133,8 @@ export default function Header() {
               </nav>
             </div>
 
-            {/* Footer */}
             <div className="drawer-footer">
-              <p>Shoply &copy; 2026</p>
+              <p>Kendo Hub &copy; 2026</p>
             </div>
           </div>
         </>
