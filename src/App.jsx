@@ -9,6 +9,7 @@ import Checkout from './pages/Checkout';
 import Affiliate from './pages/Affiliate';
 import AffiliateAbout from './pages/AffiliateAbout';
 import RefundPolicy from './pages/RefundPolicy';
+import Track from './pages/Track';
 import { About, Account, Policies, NotFound } from './pages/Misc';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/account" element={<Account />} />
               <Route path="/policies" element={<Policies />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/track" element={<Track />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
